@@ -2,7 +2,6 @@ package com.userservise.app.service;
 
 
 import com.userservise.app.model.dto.CardDto;
-import com.userservise.app.model.dto.UserDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
