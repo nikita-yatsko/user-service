@@ -6,10 +6,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
 public class CardDto {
 
     private Integer id;
@@ -22,14 +24,14 @@ public class CardDto {
     private String holder;
 
     @NotNull(message = "Expiration date cannot be null")
-    private LocalDateTime expirationDate;
+    private LocalDate expirationDate;
 
     @NotNull(message = "Active status must be set")
     private ActiveStatus active;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 }

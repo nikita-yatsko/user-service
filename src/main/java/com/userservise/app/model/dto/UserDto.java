@@ -4,12 +4,16 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.userservise.app.model.enums.ActiveStatus;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserDto {
 
     private Integer id;
@@ -23,7 +27,7 @@ public class UserDto {
     private String surname;
 
     @Past(message = "Birth date must be in the past")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email cannot be empty")
@@ -36,8 +40,8 @@ public class UserDto {
     private ActiveStatus active;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime createdAt;
+    private LocalDate createdAt;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDateTime updatedAt;
+    private LocalDate updatedAt;
 }

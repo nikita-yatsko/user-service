@@ -16,6 +16,9 @@ import com.userservise.app.utils.CardNumberGenerator;
 import com.userservise.app.utils.specifications.CardSpecifications;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,6 +40,7 @@ public class CardServiceImpl implements CardService {
     private final UserRepository userRepository;
 
     @Override
+    @CachePut(value = "cards", key = "#result.id")
     public CardDto createCard(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
@@ -51,6 +55,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "cards", key = "#id")
     public CardDto getCardById(Integer id) {
         Card card = cardRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -79,6 +84,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @CachePut(value = "cards", key = "#id")
     public CardDto updateCard(Integer id, CardDto requestUpdate) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -93,6 +99,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @CacheEvict(value = "cards", key = "#id")
     public Boolean activateCard(Integer id) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -104,6 +111,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @CacheEvict(value = "cards", key = "#id")
     public Boolean deactivateCard(Integer id) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -115,6 +123,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @CacheEvict(value = "cards", key = "#id")
     public void deleteCard(Integer id) {
         if (!cardRepository.existsById(id))
             throw new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id));

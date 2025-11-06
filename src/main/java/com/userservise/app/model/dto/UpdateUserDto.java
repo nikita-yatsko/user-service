@@ -5,10 +5,12 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
 public class UpdateUserDto {
 
     @NotBlank(message = "Name can not be empty")
@@ -20,7 +22,7 @@ public class UpdateUserDto {
     private String surname;
 
     @Past(message = "Birth date must be in the past")
-    private LocalDateTime birthDate;
+    private LocalDate birthDate;
 
     @Email(message = "Email should be valid")
     @NotBlank(message = "Email cannot be empty")

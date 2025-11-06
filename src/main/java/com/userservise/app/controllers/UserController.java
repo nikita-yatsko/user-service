@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @Validated
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/api/user")
 public class UserController {
 
     private final UserService userService;
@@ -29,8 +29,8 @@ public class UserController {
     {
         log.info("Received request to fetch user with ID: {}", id);
         UserDto userDto = userService.getUserById(id);
-
         log.debug("Fetched user data: {}", userDto);
+
         return ResponseEntity.ok(userDto);
     }
 

@@ -18,7 +18,7 @@ import java.util.List;
 @Validated
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/cards")
+@RequestMapping("/api/card")
 public class CardController {
 
     private final CardService cardService;
@@ -49,15 +49,15 @@ public class CardController {
         return ResponseEntity.ok().body(cards);
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/user/{id}")
     public ResponseEntity<List<CardDto>> getCardByUserId(
             @PathVariable("id") Integer userId
     ){
         log.info("Received request to fetch card with UserId: {}", userId);
 
         List<CardDto> response = cardService.getAllByUserId(userId);
+        log.debug("Fetched cards data by userId: {}", response);
 
-        log.debug("Fetched card data: {}", response);
         return ResponseEntity.ok(response);
     }
 
@@ -73,7 +73,7 @@ public class CardController {
         return ResponseEntity.ok().body(response);
     }
 
-    @PutMapping("/update/id")
+    @PutMapping("/update/{id}")
     public ResponseEntity<CardDto> updateCard(
             @PathVariable Integer id,
             @Valid @RequestBody CardDto cardDto
