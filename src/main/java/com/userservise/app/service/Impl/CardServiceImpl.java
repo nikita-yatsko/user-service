@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Service
 @Transactional
-@Slf4j //TODO logging
+@Slf4j
 public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
