@@ -1,11 +1,12 @@
 package com.userservise.app.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.userservise.app.model.enums.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -25,8 +26,9 @@ public class User extends BaseEntity {
     @Column(name = "surname")
     private String surname;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "birth_date")
-    private Date birthDate;
+    private LocalDate birthDate;
 
     @Column(name = "email")
     private String email;

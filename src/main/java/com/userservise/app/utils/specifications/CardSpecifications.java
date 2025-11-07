@@ -1,7 +1,6 @@
 package com.userservise.app.utils.specifications;
 
 import com.userservise.app.model.entity.Card;
-import com.userservise.app.model.entity.User;
 import org.springframework.data.jpa.domain.Specification;
 
 public class CardSpecifications {

@@ -9,6 +9,7 @@ import com.userservise.app.model.enums.ActiveStatus;
 import com.userservise.app.model.exception.DataExistException;
 import com.userservise.app.model.exception.InvalidDataException;
 import com.userservise.app.model.exception.NotFoundException;
+import com.userservise.app.model.request.CreateUserRequest;
 import com.userservise.app.repository.UserRepository;
 import com.userservise.app.service.UserService;
 import com.userservise.app.utils.specifications.UserSpecifications;
@@ -33,11 +34,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @CachePut(value = "users", key = "#result.id")
-    public UserDto createUser(UserDto request) {
+    public UserDto createUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
-        User user =  userRepository.save(userMapper.toUser(request));
+        User user =  userRepository.save(userMapper.createUser(request));
 
         return userMapper.toDto(user);
     }

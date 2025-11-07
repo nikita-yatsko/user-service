@@ -25,8 +25,7 @@ public class CardController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CardDto> getCardById(
-            @PathVariable Integer id
-    ) {
+            @PathVariable Integer id) {
         log.info("Received request to fetch card with ID: {}", id);
         CardDto card = cardService.getCardById(id);
 
@@ -38,8 +37,7 @@ public class CardController {
     public ResponseEntity<Page<CardDto>> getAllCards(
             @RequestParam(required = false) String holder,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit
-    ) {
+            @RequestParam(defaultValue = "10") int limit) {
         log.info("Received request to fetch all cards");
 
         Pageable pageable = PageRequest.of(page, limit);
@@ -51,8 +49,7 @@ public class CardController {
 
     @GetMapping("/user/{id}")
     public ResponseEntity<List<CardDto>> getCardByUserId(
-            @PathVariable("id") Integer userId
-    ){
+            @PathVariable("id") Integer userId){
         log.info("Received request to fetch card with UserId: {}", userId);
 
         List<CardDto> response = cardService.getAllByUserId(userId);
@@ -63,8 +60,7 @@ public class CardController {
 
     @PostMapping("/create/{id}")
     public ResponseEntity<CardDto> createCard(
-            @PathVariable("id") Integer userId
-    ) {
+            @PathVariable("id") Integer userId) {
         log.info("Received request to create card for userId: {}", userId);
 
         CardDto response = cardService.createCard(userId);
@@ -76,8 +72,7 @@ public class CardController {
     @PutMapping("/update/{id}")
     public ResponseEntity<CardDto> updateCard(
             @PathVariable Integer id,
-            @Valid @RequestBody CardDto cardDto
-    ) {
+            @Valid @RequestBody CardDto cardDto) {
         log.info("Received request to update card with ID: {}", id);
 
         CardDto response = cardService.updateCard(id, cardDto);
@@ -88,8 +83,7 @@ public class CardController {
 
     @GetMapping("/{id}/active")
     public ResponseEntity<Void> setActiveCard(
-            @PathVariable Integer id
-    ) {
+            @PathVariable Integer id) {
         log.info("Received request to set active to card with ID: {}", id);
 
         if (!cardService.activateCard(id)) {
@@ -103,8 +97,7 @@ public class CardController {
 
     @GetMapping("/{id}/inactive")
     public ResponseEntity<Void> setInactiveCard(
-            @PathVariable Integer id
-    ) {
+            @PathVariable Integer id) {
         log.info("Received request to set inactive to card with ID: {}", id);
 
         if (!cardService.deactivateCard(id)) {
@@ -118,8 +111,7 @@ public class CardController {
 
     @DeleteMapping("/{id}/delete")
     public ResponseEntity<Void> deleteCard(
-            @PathVariable Integer id
-    ) {
+            @PathVariable Integer id) {
         log.info("Received request to delete card with ID: {}", id);
 
         cardService.deleteCard(id);
