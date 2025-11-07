@@ -2,14 +2,13 @@ package com.userservise.app.service.Impl;
 
 import com.userservise.app.mapper.UserMapper;
 import com.userservise.app.model.constants.ErrorMessage;
-import com.userservise.app.model.dto.UpdateUserDto;
+import com.userservise.app.model.dto.UserRequest;
 import com.userservise.app.model.dto.UserDto;
 import com.userservise.app.model.entity.User;
 import com.userservise.app.model.enums.ActiveStatus;
 import com.userservise.app.model.exception.DataExistException;
 import com.userservise.app.model.exception.InvalidDataException;
 import com.userservise.app.model.exception.NotFoundException;
-import com.userservise.app.model.request.CreateUserRequest;
 import com.userservise.app.repository.UserRepository;
 import com.userservise.app.service.UserService;
 import com.userservise.app.utils.specifications.UserSpecifications;
@@ -34,7 +33,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @CachePut(value = "users", key = "#result.id")
-    public UserDto createUser(CreateUserRequest request) {
+    public UserDto createUser(UserRequest request) {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
@@ -65,9 +64,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @CachePut(value = "users", key = "#id")
-    public UserDto updateUser(Integer id, UpdateUserDto request) {
+    public UserDto updateUser(Integer id, UserRequest request) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
 
         if (!request.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(request.getEmail()))
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));

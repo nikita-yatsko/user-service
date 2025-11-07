@@ -12,7 +12,7 @@ import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor
-public class UpdateUserDto {
+public class UserRequest {
 
     @NotBlank(message = "Name can not be empty")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")

@@ -1,8 +1,7 @@
 package com.userservise.app.controllers;
 
-import com.userservise.app.model.dto.UpdateUserDto;
+import com.userservise.app.model.dto.UserRequest;
 import com.userservise.app.model.dto.UserDto;
-import com.userservise.app.model.request.CreateUserRequest;
 import com.userservise.app.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +49,7 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<UserDto> createUser(
-            @RequestBody @Valid CreateUserRequest request) {
+            @RequestBody @Valid UserRequest request) {
         log.info("Received request to create user: {}", request.getEmail());
         System.out.println(request.getBirthDate());
         UserDto response = userService.createUser(request);
@@ -62,7 +61,7 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDto> updateUserWithId(
             @PathVariable("id") Integer id,
-            @RequestBody @Valid UpdateUserDto updatedUser) {
+            @RequestBody @Valid UserRequest updatedUser) {
         log.info("Received request to update user with ID: {}", id);
         UserDto response = userService.updateUser(id, updatedUser);
 
