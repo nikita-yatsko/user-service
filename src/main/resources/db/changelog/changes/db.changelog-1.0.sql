@@ -12,7 +12,6 @@ CREATE TABLE users(
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE INDEX idx_users_email ON users(email);
 
 --changeset nyatska:2
 CREATE TABLE payment_cards(
