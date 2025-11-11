@@ -2,6 +2,7 @@ package com.user.servise.User.Servise.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.userservise.app.UserServiseApplication;
+import com.userservise.app.model.dto.UserRequest;
 import com.userservise.app.model.entity.User;
 import com.userservise.app.model.enums.ActiveStatus;
 import com.userservise.app.repository.UserRepository;
@@ -14,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -41,7 +43,7 @@ public class UserControllerTest {
         savedUser.setName("Test");
         savedUser.setSurname("User");
         savedUser.setEmail("testUserMail@mail.com");
-        savedUser.setBirthDate(LocalDate.now());
+        savedUser.setBirthDate(LocalDate.of(2000, 1, 1));
         savedUser.setActive(ActiveStatus.ACTIVE);
 
         savedUser = userRepository.saveAndFlush(savedUser);
@@ -85,7 +87,41 @@ public class UserControllerTest {
     }
 
     @Test
-    public void createUser_200_Ok() throws Exception {
+    @Transactional
+    public void createUser_201_Ok() throws Exception {
+        UserRequest request = new UserRequest();
+        request.setName("Name");
+        request.setSurname("Surname");
+        request.setBirthDate(LocalDate.of(2000, 1, 1));
+        request.setEmail("NameSurname@mail.com");
 
+        mockMvc.perform(MockMvcRequestBuilders
+                        .post("/api/user/create")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.surname").value(request.getSurname()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(request.getEmail()));
     }
+
+    @Test
+    @Transactional
+    public void updateUser_200_Ok() throws Exception {
+        UserRequest request = new UserRequest();
+        request.setName(savedUser.getName());
+        request.setSurname(savedUser.getSurname());
+        request.setBirthDate(savedUser.getBirthDate());
+        request.setEmail("NewEmail@mail.com");
+
+        mockMvc.perform(MockMvcRequestBuilders
+                        .put("/api/user/update/" + savedUser.getId())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.name").value(request.getName()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.email").value(request.getEmail()));
+    }
+
+    //TODO add other tests
 }

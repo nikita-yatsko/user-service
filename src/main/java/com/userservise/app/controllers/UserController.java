@@ -85,8 +85,7 @@ public class UserController {
 
     @GetMapping("/{id}/inactive")
     public ResponseEntity<Void> setInactiveUser(
-            @PathVariable("id") Integer id
-    ) {
+            @PathVariable("id") Integer id ) {
         log.info("Received request to set inactive user with ID: {}", id);
 
         if (!userService.deactivateUser(id)) {
