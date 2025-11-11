@@ -17,6 +17,8 @@ public interface UserMapper {
     UserDto toDto(User user);
 
     @Mapping(target = "cards", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "active", ignore = true)
     void updateUser(UserRequest userDto, @MappingTarget User user);
 
     @Mapping(target = "cards", ignore = true)
