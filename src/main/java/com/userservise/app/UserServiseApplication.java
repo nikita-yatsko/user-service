@@ -1,4 +1,4 @@
-package com.user.servise.User.Servise;
+package com.userservise.app;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
