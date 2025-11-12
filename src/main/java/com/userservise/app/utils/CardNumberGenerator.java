@@ -1,7 +1,11 @@
 package com.userservise.app.utils;
 
+
+import lombok.experimental.UtilityClass;
+
 import java.util.Random;
 
+@UtilityClass
 public class CardNumberGenerator {
     private static final Random random = new Random();
 
