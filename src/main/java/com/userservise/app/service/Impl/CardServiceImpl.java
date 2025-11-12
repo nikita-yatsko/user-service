@@ -15,7 +15,6 @@ import com.userservise.app.service.CardService;
 import com.userservise.app.utils.CardNumberGenerator;
 import com.userservise.app.utils.specifications.CardSpecifications;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -25,7 +24,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -138,7 +137,7 @@ public class CardServiceImpl implements CardService {
         card.setOwner(user);
         card.setNumber(generateCardNumber());
         card.setHolder(user.getName() + " " + user.getSurname());
-        card.setExpirationDate(new Date(System.currentTimeMillis() + 4L * 365 * 24 * 60 * 60 * 1000)); // add 4 years
+        card.setExpirationDate(LocalDate.now().plusYears(4)); // add 4 years
         card.setActive(ActiveStatus.INACTIVE);
 
         return card;

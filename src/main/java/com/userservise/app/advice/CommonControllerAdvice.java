@@ -49,7 +49,4 @@ public class CommonControllerAdvice {
 
         return ResponseEntity.status(status).body(response);
     }
-
-
-
 }

@@ -1,13 +1,12 @@
 package com.userservise.app.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.userservise.app.model.enums.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -31,7 +30,7 @@ public class Card extends BaseEntity {
     private String holder;
 
     @Column(name = "expiration_date")
-    private Date expirationDate;
+    private LocalDate expirationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "active")
