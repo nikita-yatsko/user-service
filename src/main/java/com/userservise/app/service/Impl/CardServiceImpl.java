@@ -15,7 +15,6 @@ import com.userservise.app.service.CardService;
 import com.userservise.app.utils.CardNumberGenerator;
 import com.userservise.app.utils.specifications.CardSpecifications;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -28,8 +27,6 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @Service
-@Transactional
-@Slf4j
 public class CardServiceImpl implements CardService {
 
     private final CardRepository cardRepository;
@@ -37,6 +34,7 @@ public class CardServiceImpl implements CardService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public CardDto createCard(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
@@ -79,6 +77,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public CardDto updateCard(Integer id, CardDto requestUpdate) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -93,6 +92,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public Boolean activateCard(Integer id) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -104,6 +104,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public Boolean deactivateCard(Integer id) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -115,6 +116,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
+    @Transactional
     public void deleteCard(Integer id) {
         if (!cardRepository.existsById(id))
             throw new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id));
