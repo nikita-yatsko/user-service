@@ -15,9 +15,12 @@ import com.userservise.app.service.CardService;
 import com.userservise.app.utils.CardNumberGenerator;
 import com.userservise.app.utils.specifications.CardSpecifications;
 import lombok.RequiredArgsConstructor;
+<<<<<<< HEAD
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+=======
+>>>>>>> 1dfcb8b (edit v2)
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,7 +41,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
+<<<<<<< HEAD
     @CachePut(value = "cards", key = "#result.id")
+=======
+>>>>>>> 1dfcb8b (edit v2)
     public CardDto createCard(Integer userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
@@ -83,7 +89,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
+<<<<<<< HEAD
     @CachePut(value = "cards", key = "#id")
+=======
+>>>>>>> 1dfcb8b (edit v2)
     public CardDto updateCard(Integer id, CardDto requestUpdate) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
@@ -99,8 +108,12 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
+<<<<<<< HEAD
     @CachePut(value = "cards", key = "#id")
     public CardDto activateCard(Integer id) {
+=======
+    public Boolean activateCard(Integer id) {
+>>>>>>> 1dfcb8b (edit v2)
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
 
@@ -112,8 +125,12 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
+<<<<<<< HEAD
     @CachePut(value = "cards", key = "#id")
     public CardDto deactivateCard(Integer id) {
+=======
+    public Boolean deactivateCard(Integer id) {
+>>>>>>> 1dfcb8b (edit v2)
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
 
@@ -125,7 +142,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
+<<<<<<< HEAD
     @CacheEvict(value = "cards", key = "#id")
+=======
+>>>>>>> 1dfcb8b (edit v2)
     public void deleteCard(Integer id) {
         if (!cardRepository.existsById(id))
             throw new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id));
