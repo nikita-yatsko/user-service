@@ -7,6 +7,6 @@ COPY docker/user-service.sh .
 
 RUN chmod +x user-service.sh
 
-EXPOSE 8189
+EXPOSE 8080
 
 ENTRYPOINT ["./user-service.sh"]

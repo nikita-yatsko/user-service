@@ -84,7 +84,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    @Transactional
     public Boolean activateUser(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
@@ -98,7 +97,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    @Transactional
     public Boolean deactivateUser(Integer id) {
         User user = userRepository.findUserById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
@@ -112,7 +110,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    @Transactional
     public void deleteById(Integer id) {
         if (!userRepository.existsById(id))
             throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id));

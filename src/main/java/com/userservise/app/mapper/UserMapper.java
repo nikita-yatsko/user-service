@@ -19,6 +19,8 @@ public interface UserMapper {
     @Mapping(target = "cards", ignore = true)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
     void updateUser(UserRequest userDto, @MappingTarget User user);
 
     @Mapping(target = "cards", ignore = true)
