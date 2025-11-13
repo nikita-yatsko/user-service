@@ -25,13 +25,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     @Override
+    @Transactional
     @CachePut(value = "users", key = "#result.id")
     public UserDto createUser(UserRequest request) {
         if (userRepository.existsByEmail(request.getEmail()))
@@ -63,6 +63,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     @CachePut(value = "users", key = "#id")
     public UserDto updateUser(Integer id, UserRequest request) {
         User user = userRepository.findById(id)
@@ -81,6 +82,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "users", key = "#id")
     public Boolean activateUser(Integer id) {
         User user = userRepository.findById(id)
@@ -93,6 +95,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "users", key = "#id")
     public Boolean deactivateUser(Integer id) {
         User user = userRepository.findUserById(id)
@@ -105,6 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     @CacheEvict(value = "users", key = "#id")
     public void deleteById(Integer id) {
         if (!userRepository.existsById(id))
