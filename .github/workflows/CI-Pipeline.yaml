@@ -2,7 +2,7 @@ name: User Service CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build:
