@@ -1,6 +1,5 @@
 package com.userservise.app.model.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.userservise.app.model.enums.ActiveStatus;
 import jakarta.persistence.*;
 import lombok.Data;

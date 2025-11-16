@@ -66,7 +66,7 @@ public class CardController {
         CardDto response = cardService.createCard(userId);
 
         log.debug("Created card: {}", response);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/update/{id}")
@@ -116,6 +116,6 @@ public class CardController {
 
         cardService.deleteCard(id);
         log.debug("Card {} was deleted.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
