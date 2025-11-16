@@ -111,6 +111,6 @@ public class CardController {
 
         cardService.deleteCard(id);
         log.debug("Card {} was deleted.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }
