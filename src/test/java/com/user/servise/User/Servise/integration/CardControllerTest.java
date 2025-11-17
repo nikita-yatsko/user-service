@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -22,10 +23,11 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 
+@ActiveProfiles("test")
 @SpringBootTest(classes = UserServiseApplication.class)
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CardControllerTest {
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+public class CardControllerTest extends BaseIntegrationTest{
 
     @Autowired
     private MockMvc mockMvc;
@@ -48,7 +50,7 @@ public class CardControllerTest {
     private User user;
     private Card card;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         user = new User();
         user.setName("Test");

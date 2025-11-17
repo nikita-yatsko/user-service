@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
         if (!checkCardsCount(user))
-            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(request.getEmail()));
+            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(user.getId()));
 
         userMapper.updateUser(request, user);
         User updatedUser = userRepository.save(user);
