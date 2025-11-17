@@ -144,10 +144,11 @@ public class CardServiceImpl implements CardService {
     }
 
     private String generateCardNumber() {
+        List<String> existing = cardRepository.findAllCardsByNumber();
         String cardNumber;
         do {
             cardNumber = CardNumberGenerator.generate();
-        } while (cardRepository.existsCardByNumber(cardNumber));
+        } while (existing.contains(cardNumber));
 
         return cardNumber;
     }
