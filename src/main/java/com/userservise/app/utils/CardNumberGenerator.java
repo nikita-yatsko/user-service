@@ -1,12 +1,12 @@
 package com.userservise.app.utils;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+
+import lombok.experimental.UtilityClass;
 
 import java.util.Random;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CardNumberGenerator {
+@UtilityClass
+public class CardNumberGenerator {
     private static final Random random = new Random();
 
     public static String generate() {
