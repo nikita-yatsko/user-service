@@ -99,28 +99,28 @@ public class CardServiceImpl implements CardService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "cards", key = "#id")
-    public Boolean activateCard(Integer id) {
+    @CachePut(value = "cards", key = "#id")
+    public CardDto activateCard(Integer id) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
 
         card.setActive(ActiveStatus.ACTIVE);
-        cardRepository.save(card);
+        Card activatedCard = cardRepository.save(card);
 
-        return card.getActive().equals(ActiveStatus.ACTIVE);
+        return cardMapper.toDto(activatedCard);
     }
 
     @Override
     @Transactional
-    @CacheEvict(value = "cards", key = "#id")
-    public Boolean deactivateCard(Integer id) {
+    @CachePut(value = "cards", key = "#id")
+    public CardDto deactivateCard(Integer id) {
         Card card = cardRepository.findCardById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(id)));
 
         card.setActive(ActiveStatus.INACTIVE);
-        cardRepository.save(card);
+        Card inactivatedCard = cardRepository.save(card);
 
-        return card.getActive().equals(ActiveStatus.INACTIVE);
+        return cardMapper.toDto(inactivatedCard);
     }
 
     @Override
