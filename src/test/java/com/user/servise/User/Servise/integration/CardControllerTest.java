@@ -23,11 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@SpringBootTest(classes = UserServiseApplication.class)
+
+@ActiveProfiles("test")
 @AutoConfigureMockMvc
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class CardControllerTest {
+@SpringBootTest(classes = UserServiseApplication.class)
+@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+public class CardControllerTest extends BaseIntegrationTest{
 
     @Autowired
     private MockMvc mockMvc;
@@ -50,7 +51,7 @@ public class CardControllerTest {
     private User user;
     private Card card;
 
-    @BeforeAll
+    @BeforeEach
     public void setUp() {
         user = new User();
         user.setName("Test");
