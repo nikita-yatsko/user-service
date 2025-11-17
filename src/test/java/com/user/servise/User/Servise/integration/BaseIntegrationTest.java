@@ -26,8 +26,6 @@ public class BaseIntegrationTest {
         registry.add("spring.datasource.username", postgres::getUsername);
         registry.add("spring.datasource.password", postgres::getPassword);
 
-//        registry.add("spring.jpa.hibernate.ddl-auto", () -> "create-drop");
-
         registry.add("spring.data.redis.host", redis::getHost);
         registry.add("spring.data.redis.port", () -> redis.getMappedPort(6379));
     }
