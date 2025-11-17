@@ -73,7 +73,7 @@ public class UserServiceImpl implements UserService {
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
         if (!checkCardsCount(user))
-            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(id));
+            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(request.getEmail()));
 
         userMapper.updateUser(request, user);
         User updatedUser = userRepository.save(user);
@@ -83,28 +83,28 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "users", key = "#id")
-    public Boolean activateUser(Integer id) {
+    @CachePut(value = "users", key = "#id")
+    public UserDto activateUser(Integer id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
 
         user.setActive(ActiveStatus.ACTIVE);
         User updatedUser = userRepository.save(user);
 
-        return updatedUser.getActive().equals(ActiveStatus.ACTIVE);
+        return userMapper.toDto(updatedUser);
     }
 
     @Override
     @Transactional
     @CacheEvict(value = "users", key = "#id")
-    public Boolean deactivateUser(Integer id) {
+    public UserDto deactivateUser(Integer id) {
         User user = userRepository.findUserById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
 
         user.setActive(ActiveStatus.INACTIVE);
         User updatedUser = userRepository.save(user);
 
-        return updatedUser.getActive().equals(ActiveStatus.INACTIVE);
+        return userMapper.toDto(updatedUser);
     }
 
     @Override

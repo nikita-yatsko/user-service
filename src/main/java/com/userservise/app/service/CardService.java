@@ -19,9 +19,9 @@ public interface CardService {
 
     CardDto updateCard(Integer id, CardDto updateCard);
 
-    Boolean activateCard(Integer id);
+    CardDto activateCard(Integer id);
 
-    Boolean deactivateCard(Integer id);
+    CardDto deactivateCard(Integer id);
 
     void deleteCard(Integer id);
 }

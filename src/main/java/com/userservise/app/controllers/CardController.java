@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -66,7 +67,7 @@ public class CardController {
         CardDto response = cardService.createCard(userId);
 
         log.debug("Created card: {}", response);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PutMapping("/update/{id}")
@@ -82,31 +83,25 @@ public class CardController {
     }
 
     @PutMapping("/{id}/active")
-    public ResponseEntity<Void> setActiveCard(
+    public ResponseEntity<CardDto> setActiveCard(
             @PathVariable Integer id) {
         log.info("Received request to set active to card with ID: {}", id);
 
-        if (!cardService.activateCard(id)) {
-            log.debug("Card {} was not set active.", id);
-            return ResponseEntity.badRequest().build();
-        }
+        CardDto response = cardService.activateCard(id);
 
         log.debug("Card {} was set active.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/inactive")
-    public ResponseEntity<Void> setInactiveCard(
+    public ResponseEntity<CardDto> setInactiveCard(
             @PathVariable Integer id) {
         log.info("Received request to set inactive to card with ID: {}", id);
 
-        if (!cardService.deactivateCard(id)) {
-            log.debug("Card {} was not set inactive.", id);
-            return ResponseEntity.badRequest().build();
-        }
+        CardDto response = cardService.deactivateCard(id);
 
         log.debug("Card {} was set inactive.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}/delete")

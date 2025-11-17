@@ -54,33 +54,37 @@ public class UserServiceTest {
     void setUp() {
         user = new User();
         user.setId(1);
-        user.setName("testname");
+        user.setName("name");
         user.setEmail("testemail@mail.com");
 
         userRequest = new UserRequest();
-        userRequest.setName("testname");
+        userRequest.setName("name");
         userRequest.setEmail("testemail@mail.com");
 
         userDto = new UserDto();
         userDto.setId(1);
-        userDto.setName("testname");
+        userDto.setName("name");
         userDto.setEmail("testemail@mail.com");
     }
 
     @Test
     public void createUser_Successful() {
+        // Arrange:
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userMapper.createUser(any())).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
+        // Act:
         UserDto result = userService.createUser(userRequest);
 
+        // Assert:
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getEmail(), result.getEmail());
 
+        // Verify
         verify(userRepository, times(1)).existsByEmail(anyString());
         verify(userRepository, times(1)).save(any(User.class));
         verify(userMapper, times(1)).createUser(any());
@@ -88,61 +92,80 @@ public class UserServiceTest {
 
     @Test
     public void createUser_ThrowException() {
+        // Arrange:
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
+        // Act:
         DataExistException result = assertThrows(DataExistException.class, () -> userService.createUser(userRequest));
 
+        // Assert:
         assertEquals(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(userRequest.getEmail()),
                 result.getMessage());
 
+        // Verify:
         verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
     public void getUserById_Successful() {
+        // Arrange:
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
+        // Act:
         UserDto result = userService.getUserById(1);
 
+        // Assert:
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getEmail(), result.getEmail());
 
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
         verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
     public void getUserById_ThrowException() {
+        // Arrange:
         when(userRepository.findById(anyInt())).
                 thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1)));
+
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.getUserById(1));
 
+        // Assert:
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(userRepository, times(1)).findById(1);
     }
 
     @Test
     public void getAllUsers_Successful() {
+        // Arrange:
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> response = new PageImpl<>(Collections.singletonList(user), pageable, 1L);
 
         when(userRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(response);
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
+        // Act
         Page<UserDto> result = userService.getAllUsers("testName", "testSurname", pageable);
 
+        // Assert:
         assertNotNull(result);
         assertEquals(response.getTotalElements(), result.getTotalElements());
-        assertEquals(userDto.getName(), result.getContent().get(0).getName());
+        assertEquals(userDto.getName(), result.getContent().getFirst().getName());
 
+        // Verify:
         verify(userRepository, times(1)).findAll(any(Specification.class), eq(pageable));
     }
 
     @Test
     public void updateUser_Successful() {
+        // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
 
@@ -157,13 +180,16 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
+        // Act:
         UserDto result = userService.updateUser(anyInt(), userRequest);
 
+        // Assert:
         assertNotNull(result);
         assertEquals(user.getId(), result.getId());
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getSurname(), result.getSurname());
 
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
         verify(userMapper, times(1)).updateUser(userRequest, user);
         verify(userRepository, times(1)).save(any(User.class));
@@ -172,19 +198,25 @@ public class UserServiceTest {
 
     @Test
     public void updateUser_UserNotFound_ThrowException() {
+        // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
 
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.updateUser(1, userRequest));
 
+        // Assert
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
     }
 
     @Test
     public void updateUser_EmailAlreadyExists_ThrowException() {
+        // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
 
@@ -195,98 +227,135 @@ public class UserServiceTest {
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
+        // Act:
         DataExistException result = assertThrows(DataExistException.class, () -> userService.updateUser(1, userRequest));
 
+        // Assert:
         assertEquals(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(userRequest.getEmail()), result.getMessage());
+
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
         verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
-    public void updateUser_CardCountError_ThrowException() {
+    public void updateUser_CardCountError_ThrowException() {// Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
         user.setCards(List.of(new Card(), new Card(), new Card(), new Card(), new Card(), new Card()));
-
         userRequest.setName("newName");
         userRequest.setSurname("newSurname");
 
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
 
+        // Act:
         InvalidDataException result = assertThrows(InvalidDataException.class, () -> userService.updateUser(1, userRequest));
 
-        assertEquals(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(userRequest.getEmail()), result.getMessage());
+        // Assert:
+        assertEquals(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(user.getId()), result.getMessage());
+
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
     }
 
     @Test
     public void activateUser_Successful() {
+        // Arrange:
+        userDto.setActive(ActiveStatus.ACTIVE);
+
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
-
-        user.setActive(ActiveStatus.ACTIVE);
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
-        Boolean result = userService.activateUser(anyInt());
+        // Act:
+        UserDto result = userService.activateUser(anyInt());
 
+        // Assert:
         assertNotNull(result);
-        assertEquals(true, result);
+        assertEquals(ActiveStatus.ACTIVE, result.getActive());
+
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
         verify(userRepository, times(1)).save(any(User.class));
+        verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
     public void activateUser_UserNotFound_ThrowException() {
+        // Arrange:
         when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.activateUser(1));
 
+        // Assert:
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
     }
 
     @Test
     public void deactivateUser_Successful() {
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        // Arrange:
+        userDto.setActive(ActiveStatus.INACTIVE);
 
-        user.setActive(ActiveStatus.INACTIVE);
+        when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
+        when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
-        Boolean result = userService.activateUser(anyInt());
+        // Act:
+        UserDto response = userService.deactivateUser(user.getId());
 
-        assertNotNull(result);
-        assertEquals(true, result);
-        verify(userRepository, times(1)).findById(anyInt());
+        // Assert:
+        assertEquals(ActiveStatus.INACTIVE, response.getActive());
+
+        // Verify:
+        verify(userRepository, times(1)).findUserById(user.getId());
         verify(userRepository, times(1)).save(any(User.class));
+        verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
-    public void deactivateUser_UserNotFound_ThrowException() {
-        when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
+    public void deactivateUser_UserNotFound_ThrowException() {// Arrange:
+        when(userRepository.findUserById(1)).thenReturn(Optional.empty());
 
-        NotFoundException result = assertThrows(NotFoundException.class, () -> userService.activateUser(1));
+        // Act:
+        NotFoundException result = assertThrows(NotFoundException.class, () -> userService.deactivateUser(1));
 
+        // Assert:
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
-        verify(userRepository, times(1)).findById(anyInt());
+
+        // Verify:
+        verify(userRepository, times(1)).findUserById(1);
     }
 
     @Test
     public void deleteById_Successful() {
+        // Arrange:
         when(userRepository.existsById(1)).thenReturn(true);
         doNothing().when(userRepository).deleteById(1);
 
+        // Act:
         userService.deleteById(1);
 
+        // Verify:
         verify(userRepository, times(1)).existsById(1);
         verify(userRepository, times(1)).deleteById(1);
     }
 
     @Test
     public void deleteById_UserNotFound_ThrowException() {
+        // Arrange:
         when(userRepository.existsById(anyInt())).thenReturn(false);
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.deleteById(1));
 
+        // Assert:
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(userRepository, times(1)).existsById(anyInt());
     }
 }

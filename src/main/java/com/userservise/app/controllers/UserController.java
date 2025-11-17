@@ -69,31 +69,25 @@ public class UserController {
     }
 
     @PutMapping("/{id}/active")
-    public ResponseEntity<Void> setActiveUser(
+    public ResponseEntity<UserDto> setActiveUser(
             @PathVariable("id") Integer id) {
         log.info("Received request to set active user with ID: {}", id);
 
-        if (!userService.activateUser(id)) {
-            log.debug("User do not activated: {}", id);
-            return ResponseEntity.badRequest().build();
-        }
+        UserDto activatedUser = userService.activateUser(id);
 
         log.debug("User activated: {}", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(activatedUser);
     }
 
     @PutMapping("/{id}/inactive")
-    public ResponseEntity<Void> setInactiveUser(
+    public ResponseEntity<UserDto> setInactiveUser(
             @PathVariable("id") Integer id ) {
         log.info("Received request to set inactive user with ID: {}", id);
 
-        if (!userService.deactivateUser(id)) {
-            log.debug("User do not inactivated: {}", id);
-            return ResponseEntity.badRequest().build();
-        }
+        UserDto inactivatedUser = userService.deactivateUser(id);
 
         log.debug("User inactivated: {}", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(inactivatedUser);
     }
 
     @DeleteMapping("/{id}")
