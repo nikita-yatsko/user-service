@@ -71,18 +71,22 @@ public class CardServiceTest {
 
     @Test
     public void createCard_Successful() {
+        // Arrange:
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(cardRepository.save(any())).thenReturn(card);
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
+        // Act:
         CardDto result = cardService.createCard(anyInt());
 
+        // Assert:
         assertNotNull(result);
         assertEquals(cardDto.getId(), result.getId());
         assertEquals(cardDto.getHolder(), result.getHolder());
         assertEquals(cardDto.getNumber(), result.getNumber());
         assertEquals(user.getCards().getFirst().getNumber(), result.getNumber());
 
+        // Verify:
         verify(userRepository, times(1)).findById(anyInt());
         verify(cardRepository, times(1)).save(any(Card.class));
         verify(cardMapper, times(1)).toDto(card);
@@ -90,12 +94,18 @@ public class CardServiceTest {
 
     @Test
     public void createCard_UserNotFound_ThrowException() {
+        // Arrange:
         when(userRepository.findById(1)).thenReturn(Optional.empty());
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.createCard(1));
 
+        // Assert
         assertNotNull(result);
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
+        verify(userRepository, times(1)).findById(anyInt());
     }
 
     @Test
@@ -111,46 +121,57 @@ public class CardServiceTest {
 
     @Test
     public void getCardById_Successful() {
+        // Arrange:
         when(cardRepository.findById(1)).thenReturn(Optional.of(card));
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
+        // Act:
         CardDto result = cardService.getCardById(1);
 
+        // Assert:
         assertNotNull(result);
         assertEquals(cardDto.getId(), result.getId());
         assertEquals(cardDto.getHolder(), result.getHolder());
         assertEquals(cardDto.getNumber(), result.getNumber());
         assertEquals(user.getCards().getFirst().getNumber(), result.getNumber());
 
+        // Verify:
         verify(cardRepository, times(1)).findById(anyInt());
         verify(cardMapper, times(1)).toDto(card);
     }
 
     @Test
     public void getCardById_CardNotFound_ThrowException() {
+        // Arrange:
         when(cardRepository.findById(1)).thenReturn(Optional.empty());
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.getCardById(1));
 
+        // Assert:
         assertNotNull(result);
         assertEquals(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
     }
 
     @Test
     public void getAllCards_Successful() {
+        // Arrange:
         Pageable pageable = PageRequest.of(0, 10);
         Page<Card> response = new PageImpl<>(Collections.singletonList(card), pageable, 1L);
 
         when(cardRepository.findAll(any(Specification.class), eq(pageable))).thenReturn(response);
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
+        // Act:
         Page<CardDto> result = cardService.getAllCards("test", pageable);
 
+        // Assert
         assertNotNull(result);
         assertEquals(cardDto.getId(), result.getContent().getFirst().getId());
         assertEquals(cardDto.getHolder(), result.getContent().getFirst().getHolder());
         assertEquals(cardDto.getNumber(), result.getContent().getFirst().getNumber());
 
+        // Verify:
         verify(cardRepository, times(1)).findAll(any(Specification.class), eq(pageable));
         verify(cardMapper, times(1)).toDto(card);
     }
@@ -158,96 +179,128 @@ public class CardServiceTest {
 
     @Test
     public void getAllByUserId_Successful() {
+        // Arrange:
         when(cardRepository.findCardsByOwnerId(anyInt())).thenReturn(List.of(card));
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
+        // Act:
         List<CardDto> result = cardService.getAllByUserId(1);
 
+        // Assert:
         assertNotNull(result);
         assertEquals(cardDto.getId(), result.getFirst().getId());
         assertEquals(cardDto.getHolder(), result.getFirst().getHolder());
         assertEquals(cardDto.getNumber(), result.getFirst().getNumber());
         assertEquals(user.getCards().getFirst().getNumber(), result.getFirst().getNumber());
 
+        // Verify:
         verify(cardRepository, times(1)).findCardsByOwnerId(anyInt());
         verify(cardMapper, times(1)).toDto(card);
     }
 
     @Test
     public void activateCard_Successful() {
-        card.setActive(ActiveStatus.ACTIVE);
+        // Arrange:
+        int cardId = card.getId();
+        cardDto.setActive(ActiveStatus.ACTIVE);
+        card.setActive(ActiveStatus.INACTIVE);
 
-        when(cardRepository.findCardById(anyInt())).thenReturn(Optional.of(card));
-        when(cardRepository.save(any())).thenReturn(card);
+        when(cardRepository.findCardById(cardId)).thenReturn(Optional.of(card));
+        when(cardRepository.save(card)).thenReturn(card);
+        when(cardMapper.toDto(card)).thenReturn(cardDto);
 
-        Boolean result = cardService.activateCard(1);
+        // Act:
+        CardDto result = cardService.activateCard(cardId);
 
-        assertNotNull(result);
-        assertEquals(true, result);
+        // Assert:
+        assertEquals(ActiveStatus.ACTIVE, result.getActive());
 
-        verify(cardRepository, times(1)).findCardById(anyInt());
-        verify(cardRepository, times(1)).save(any(Card.class));
+        // Verify:
+        verify(cardRepository, times(1)).findCardById(cardId);
+        verify(cardRepository, times(1)).save(card);
     }
 
     @Test
     public void activateCard_CardNotFound_ThrowException() {
+        // Arrange:
         when(cardRepository.findCardById(anyInt())).thenReturn(Optional.empty());
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.activateCard(1));
 
+        // Assert:
         assertNotNull(result);
         assertEquals(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(cardRepository, times(1)).findCardById(anyInt());
     }
 
     @Test
     public void deactivateCard_Successful() {
-        card.setActive(ActiveStatus.INACTIVE);
+        // Arrange:
+        int cardId = card.getId();
+        cardDto.setActive(ActiveStatus.INACTIVE);
 
-        when(cardRepository.findCardById(anyInt())).thenReturn(Optional.of(card));
+        when(cardRepository.findCardById(cardId)).thenReturn(Optional.of(card));
         when(cardRepository.save(any())).thenReturn(card);
+        when(cardMapper.toDto(card)).thenReturn(cardDto);
 
-        Boolean result = cardService.deactivateCard(1);
+        // Act:
+        CardDto result = cardService.deactivateCard(cardId);
 
+        // Assert:
         assertNotNull(result);
-        assertEquals(true, result);
+        assertEquals(ActiveStatus.INACTIVE, result.getActive());
 
-        verify(cardRepository, times(1)).findCardById(anyInt());
+        // Verify:
+        verify(cardRepository, times(1)).findCardById(cardId);
         verify(cardRepository, times(1)).save(any(Card.class));
     }
 
     @Test
     public void deactivateCard_CardNotFound_ThrowException() {
+        // Arrange:
         when(cardRepository.findCardById(anyInt())).thenReturn(Optional.empty());
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.deactivateCard(1));
 
+        // Assert:
         assertNotNull(result);
         assertEquals(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(cardRepository, times(1)).findCardById(anyInt());
     }
 
     @Test
     public void deleteCard_Successful() {
+        // Arrange:
         when(cardRepository.existsById(anyInt())).thenReturn(true);
         doNothing().when(cardRepository).deleteById(anyInt());
 
+        // Act:
         cardService.deleteCard(1);
 
+        // Verify:
         verify(cardRepository, times(1)).existsById(anyInt());
         verify(cardRepository, times(1)).deleteById(anyInt());
     }
 
     @Test
     public void deleteCard_CardNotFound_ThrowException() {
+        // Arrange:
         when(cardRepository.existsById(anyInt())).thenReturn(false);
 
+        // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.deleteCard(1));
 
+        // Assert
         assertNotNull(result);
         assertEquals(ErrorMessage.CARD_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
+
+        // Verify:
         verify(cardRepository, times(1)).existsById(anyInt());
     }
-
-
 }

@@ -15,9 +15,9 @@ public interface UserService {
 
     UserDto updateUser(Integer id, UserRequest updatedUser);
 
-    Boolean activateUser(Integer id);
+    UserDto activateUser(Integer id);
 
-    Boolean deactivateUser(Integer id);
+    UserDto deactivateUser(Integer id);
 
     void deleteById(Integer id);
 }

@@ -82,31 +82,25 @@ public class CardController {
     }
 
     @PutMapping("/{id}/active")
-    public ResponseEntity<Void> setActiveCard(
+    public ResponseEntity<CardDto> setActiveCard(
             @PathVariable Integer id) {
         log.info("Received request to set active to card with ID: {}", id);
 
-        if (!cardService.activateCard(id)) {
-            log.debug("Card {} was not set active.", id);
-            return ResponseEntity.badRequest().build();
-        }
+        CardDto response = cardService.activateCard(id);
 
         log.debug("Card {} was set active.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}/inactive")
-    public ResponseEntity<Void> setInactiveCard(
+    public ResponseEntity<CardDto> setInactiveCard(
             @PathVariable Integer id) {
         log.info("Received request to set inactive to card with ID: {}", id);
 
-        if (!cardService.deactivateCard(id)) {
-            log.debug("Card {} was not set inactive.", id);
-            return ResponseEntity.badRequest().build();
-        }
+        CardDto response = cardService.deactivateCard(id);
 
         log.debug("Card {} was set inactive.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}/delete")
