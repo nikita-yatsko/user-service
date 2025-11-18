@@ -47,3 +47,21 @@ jobs:
         with:
           name: user-service
           path: target/*.jar
+
+      # Build Docker image
+      - name: Build Docker image
+        run: docker build -t user-service:latest .
+
+      # Login to Docker Hub (или GitHub Container Registry)
+      - name: Log in to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Push Docker image
+      - name: Push Docker image
+        uses: docker/build-push-action@v4
+        with:
+          push: true
+          tags: your-docker-repo/user-service:latest
