@@ -1,7 +1,8 @@
 package com.userservise.app.security.filter;
 
+import com.userservise.app.model.dto.AuthResponse;
 import com.userservise.app.security.model.CustomUserDetails;
-import com.userservise.app.service.JwtService;
+import com.userservise.app.service.Impl.AuthServiceClient;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,67 +10,69 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private final JwtService jwtService;
+    private final AuthServiceClient authServiceClient;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    FilterChain filterChain) throws ServletException, IOException {
+                                    FilterChain filterChain)
+            throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        log.info("Authorization header: {}", authHeader);
+        String header = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.info("No Bearer token found");
-            filterChain.doFilter(request, response);
-            return;
+        if (header != null && header.startsWith("Bearer ")) {
+            String token = header.substring(7);
+
+            try {
+                log.info("Validating token: {}", token);
+                AuthResponse auth = authServiceClient.validate(token);
+
+
+                if (auth != null && auth.isValid()) {
+                    UsernamePasswordAuthenticationToken authentication = getUsernamePasswordAuthenticationToken(auth);
+                    SecurityContextHolder.getContext().setAuthentication(authentication);
+                    log.info("Authentication successful for user with ID: {}", auth.getUserId());
+                }
+
+            } catch (Exception e) {
+                log.error("Authentication failed: {}", e.getMessage());
+                SecurityContextHolder.clearContext();
+            }
         }
 
-        String jwt = authHeader.substring(7);
-        log.info("Extracted JWT: {}", jwt);
-
-        if (jwtService.isValidToken(jwt)) {  // валидируем подпись и срок
-            Integer userId = jwtService.extractUserIdFromToken(jwt);
-            String role = jwtService.extractRoleFromToken(jwt);
-            log.info("Token valid. userId={}, role={}", userId, role);
-
-            CustomUserDetails userDetails = new CustomUserDetails(userId, role);
-
-            UsernamePasswordAuthenticationToken authentication =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities());
-
-            authentication.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
-
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-            log.info("Authentication set in SecurityContextHolder");
-        } else {
-            log.warn("JWT token invalid");
-        }
-
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        log.info("Current principal: {}", principal);
+        System.out.println("Current principal: " + principal);
         filterChain.doFilter(request, response);
     }
 
+    private static UsernamePasswordAuthenticationToken getUsernamePasswordAuthenticationToken(AuthResponse auth) {
 
-    private String getJwtFromRequest(HttpServletRequest request) {
-        final String authHeader = request.getHeader("Authorization");
-        return authHeader.substring(7);
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + auth.getRole()));
+
+        CustomUserDetails userDetails = new CustomUserDetails(auth.getUserId(), auth.getRole());
+        System.out.println("Role: " + userDetails.getRole());
+        System.out.println("Id: " + userDetails.getId());
+
+        // Кладём CustomUserDetails в Authentication
+        return new UsernamePasswordAuthenticationToken(
+                userDetails,
+                null,
+                authorities
+        );
     }
 }
