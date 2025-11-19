@@ -12,8 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("/{id}")
-    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
+    @PreAuthorize("#id == principal.getId() or hasRole('ADMIN')")
     public ResponseEntity<UserDto> getUserById(
             @PathVariable Integer id) {
         log.info("Received request to fetch user with ID: {}", id);
@@ -41,7 +44,8 @@ public class UserController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String surname,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit) {
+            @RequestParam(defaultValue = "10") int limit, Principal principal) {
+
         log.info("Received request to fetch all users");
         Pageable pageable = PageRequest.of(page, limit);
         Page<UserDto> response = userService.getAllUsers(firstName, surname, pageable);
@@ -51,6 +55,7 @@ public class UserController {
     }
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> createUser(
             @RequestBody @Valid UserRequest request) {
         log.info("Received request to create user: {}", request.getEmail());
@@ -61,6 +66,7 @@ public class UserController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
     public ResponseEntity<UserDto> updateUserWithId(
             @PathVariable("id") Integer id,
             @RequestBody @Valid UserRequest updatedUser) {
@@ -72,6 +78,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/active")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> setActiveUser(
             @PathVariable("id") Integer id) {
         log.info("Received request to set active user with ID: {}", id);
@@ -83,6 +90,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}/inactive")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> setInactiveUser(
             @PathVariable("id") Integer id ) {
         log.info("Received request to set inactive user with ID: {}", id);
@@ -94,6 +102,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUserById(
             @PathVariable Integer id) {
         log.info("Received request to delete user with ID: {}", id);
@@ -101,5 +110,13 @@ public class UserController {
 
         log.debug("User deleted: {}", id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/debug-auth")
+    public String debug(Authentication authentication) {
+        if (authentication == null) {
+            return "Authentication = null";
+        }
+        return "Principal = " + authentication.getPrincipal().getClass();
     }
 }

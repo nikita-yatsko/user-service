@@ -14,7 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-    private final Integer id;
+    private final long id;
     private final String role;
 
     @Override
@@ -22,14 +22,15 @@ public class CustomUserDetails implements UserDetails {
         return List.of(() -> role);
     }
 
-    @Override
-    public String getPassword() {
-        return null; // пароля нет
-    }
 
     @Override
     public String getUsername() {
-        return id.toString(); // можно использовать id как principal
+        return String.valueOf(id);
+    }
+
+    @Override
+    public String getPassword() {
+        return null;
     }
 
     @Override
