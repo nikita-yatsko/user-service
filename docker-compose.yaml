@@ -35,5 +35,10 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
 
+networks:
+  default:
+    external: true
+    name: microservices-net
+
 volumes:
   postgres_data:

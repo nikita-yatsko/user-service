@@ -52,7 +52,7 @@ public class CardController {
     }
 
     @GetMapping("/user/{id}")
-    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
+    @PreAuthorize("@cardServiceImpl.isOwner(#userId, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<List<CardDto>> getCardByUserId(
             @PathVariable("id") Integer userId){
         log.info("Received request to fetch card with UserId: {}", userId);
@@ -64,7 +64,7 @@ public class CardController {
     }
 
     @PostMapping("/create/{id}")
-    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
+    @PreAuthorize("@cardServiceImpl.isOwner(#userId, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<CardDto> createCard(
             @PathVariable("id") Integer userId) {
         log.info("Received request to create card for userId: {}", userId);
