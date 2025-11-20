@@ -16,6 +16,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import javax.naming.AuthenticationException;
 import java.io.IOException;
 import java.util.List;
 
@@ -38,25 +39,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String token = header.substring(7);
 
             try {
-                log.info("Validating token: {}", token);
                 AuthResponse auth = authServiceClient.validate(token);
-
 
                 if (auth != null && auth.isValid()) {
                     UsernamePasswordAuthenticationToken authentication = getUsernamePasswordAuthenticationToken(auth);
                     SecurityContextHolder.getContext().setAuthentication(authentication);
-                    log.info("Authentication successful for user with ID: {}", auth.getUserId());
+                } else {
+                    throw new AuthenticationException("Invalid token"); // TODO change message
                 }
 
             } catch (Exception e) {
-                log.error("Authentication failed: {}", e.getMessage());
                 SecurityContextHolder.clearContext();
             }
         }
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        log.info("Current principal: {}", principal);
-        System.out.println("Current principal: " + principal);
         filterChain.doFilter(request, response);
     }
 
@@ -65,10 +61,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_" + auth.getRole()));
 
         CustomUserDetails userDetails = new CustomUserDetails(auth.getUserId(), auth.getRole());
-        System.out.println("Role: " + userDetails.getRole());
-        System.out.println("Id: " + userDetails.getId());
 
-        // Кладём CustomUserDetails в Authentication
         return new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,

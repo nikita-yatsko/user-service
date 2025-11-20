@@ -14,7 +14,7 @@ public class AuthServiceClient {
 
     public AuthServiceClient(WebClient.Builder builder,
                              @Value("${auth.service.url}") String baseUrl) {
-        this.webClient = builder.baseUrl("http://auth-service:8081").build();
+        this.webClient = builder.baseUrl(baseUrl).build();
     }
 
     public AuthResponse validate(String token) {
