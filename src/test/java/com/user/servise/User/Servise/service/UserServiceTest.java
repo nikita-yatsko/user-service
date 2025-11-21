@@ -239,7 +239,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_CardCountError_ThrowException() {// Arrange:
+    public void updateUser_CardCountError_ThrowException() {
+        // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
         user.setCards(List.of(new Card(), new Card(), new Card(), new Card(), new Card(), new Card()));
@@ -317,7 +318,8 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deactivateUser_UserNotFound_ThrowException() {// Arrange:
+    public void deactivateUser_UserNotFound_ThrowException() {
+        // Arrange:
         when(userRepository.findUserById(1)).thenReturn(Optional.empty());
 
         // Act:

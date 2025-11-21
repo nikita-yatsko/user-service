@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 
-
 @ActiveProfiles("test")
 @SpringBootTest(classes = UserServiseApplication.class)
 @AutoConfigureMockMvc

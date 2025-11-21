@@ -12,6 +12,7 @@ import com.userservise.app.model.exception.NotFoundException;
 import com.userservise.app.repository.UserRepository;
 import com.userservise.app.service.UserService;
 import com.userservise.app.utils.specifications.UserSpecifications;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -73,7 +74,7 @@ public class UserServiceImpl implements UserService {
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
         if (!checkCardsCount(user))
-            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(user.getId()));
+            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(id));
 
         userMapper.updateUser(request, user);
         User updatedUser = userRepository.save(user);

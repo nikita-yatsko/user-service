@@ -1,6 +1,5 @@
 package com.userservise.app.utils;
 
-
 import lombok.experimental.UtilityClass;
 
 import java.util.Random;
