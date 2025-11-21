@@ -97,8 +97,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CachePut(value = "users", key = "#id")
-    public UserDto deactivateUser(@NotNull Integer id) {
+    @CacheEvict(value = "users", key = "#id")
+    public UserDto deactivateUser(Integer id) {
         User user = userRepository.findUserById(id)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
 

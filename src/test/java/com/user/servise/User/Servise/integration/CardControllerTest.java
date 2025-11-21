@@ -23,10 +23,9 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 
-
 @ActiveProfiles("test")
-@AutoConfigureMockMvc
 @SpringBootTest(classes = UserServiseApplication.class)
+@AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class CardControllerTest extends BaseIntegrationTest{
 
