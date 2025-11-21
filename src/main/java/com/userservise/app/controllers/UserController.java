@@ -1,8 +1,7 @@
 package com.userservise.app.controllers;
 
-import com.userservise.app.model.dto.UpdateUserDto;
+import com.userservise.app.model.dto.UserRequest;
 import com.userservise.app.model.dto.UserDto;
-import com.userservise.app.model.request.CreateUserRequest;
 import com.userservise.app.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,8 +49,9 @@ public class UserController {
 
     @PostMapping("/create")
     public ResponseEntity<UserDto> createUser(
-            @RequestBody @Valid CreateUserRequest request) {
+            @RequestBody @Valid UserRequest request) {
         log.info("Received request to create user: {}", request.getEmail());
+        System.out.println(request.getBirthDate());
         UserDto response = userService.createUser(request);
 
         log.debug("User was created: {}", request);
@@ -61,7 +61,7 @@ public class UserController {
     @PutMapping("/update/{id}")
     public ResponseEntity<UserDto> updateUserWithId(
             @PathVariable("id") Integer id,
-            @RequestBody @Valid UpdateUserDto updatedUser) {
+            @RequestBody @Valid UserRequest updatedUser) {
         log.info("Received request to update user with ID: {}", id);
         UserDto response = userService.updateUser(id, updatedUser);
 
@@ -70,33 +70,25 @@ public class UserController {
     }
 
     @PutMapping("/{id}/active")
-    public ResponseEntity<Void> setActiveUser(
-            @PathVariable("id") Integer id
-    ) {
+    public ResponseEntity<UserDto> setActiveUser(
+            @PathVariable("id") Integer id) {
         log.info("Received request to set active user with ID: {}", id);
 
-        if (!userService.activateUser(id)) {
-            log.debug("User do not activated: {}", id);
-            return ResponseEntity.badRequest().build();
-        }
+        UserDto activatedUser = userService.activateUser(id);
 
         log.debug("User activated: {}", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(activatedUser);
     }
 
     @PutMapping("/{id}/inactive")
-    public ResponseEntity<Void> setInactiveUser(
-            @PathVariable("id") Integer id
-    ) {
+    public ResponseEntity<UserDto> setInactiveUser(
+            @PathVariable("id") Integer id ) {
         log.info("Received request to set inactive user with ID: {}", id);
 
-        if (!userService.deactivateUser(id)) {
-            log.debug("User do not inactivated: {}", id);
-            return ResponseEntity.badRequest().build();
-        }
+        UserDto inactivatedUser = userService.deactivateUser(id);
 
         log.debug("User inactivated: {}", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(inactivatedUser);
     }
 
     @DeleteMapping("/{id}")
@@ -106,6 +98,6 @@ public class UserController {
         userService.deleteById(id);
 
         log.debug("User deleted: {}", id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 }

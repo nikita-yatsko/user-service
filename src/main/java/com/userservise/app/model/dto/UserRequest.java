@@ -1,20 +1,18 @@
-package com.userservise.app.model.request;
+package com.userservise.app.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class CreateUserRequest {
+public class UserRequest {
 
     @NotBlank(message = "Name can not be empty")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")

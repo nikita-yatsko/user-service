@@ -7,6 +7,6 @@ public class CardSpecifications {
 
     public static Specification<Card> hasHolder(String holder) {
         return (root, query, cb) ->
-                holder == null ? null : cb.like(cb.lower(root.get("name")), "%" + holder.toLowerCase() + "%");
+                holder == null ? null : cb.like(cb.lower(root.get("holder")), "%" + holder.toLowerCase() + "%");
     }
 }

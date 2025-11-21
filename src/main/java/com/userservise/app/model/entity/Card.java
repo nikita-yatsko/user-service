@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @Data
@@ -30,7 +30,7 @@ public class Card extends BaseEntity {
     private String holder;
 
     @Column(name = "expiration_date")
-    private Date expirationDate;
+    private LocalDate expirationDate;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "active")
