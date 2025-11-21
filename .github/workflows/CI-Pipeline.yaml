@@ -53,4 +53,4 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: your-docker-repo/user-service:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/user-service:latest
