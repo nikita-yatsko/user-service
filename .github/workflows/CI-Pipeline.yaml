@@ -43,7 +43,7 @@ jobs:
       - name: Build Docker image
         run: docker build -t user-service:latest .
 
-      # Login to Docker Hub (или GitHub Container Registry)
+      # Login to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
