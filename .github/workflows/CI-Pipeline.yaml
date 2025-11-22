@@ -31,14 +31,20 @@ jobs:
       - name: Build and test
         run: mvn -B clean verify
 
-      # 4. Анализ кода с SonarCloud через Maven
-      - name: SonarCloud Scan
-        run: mvn sonar:sonar \
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-          -Dsonar.organization=${{ secrets.SONAR_ORG }} \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
-          -Dsonar.verbose=true
+#      # 4. Анализ кода с SonarCloud через Maven
+#      - name: SonarCloud Scan
+#        run: mvn sonar:sonar \
+#          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+#          -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+#          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
+#          -Dsonar.login=${{ secrets.SONAR_TOKEN }} \
+#          -Dsonar.verbose=true
+      - name: Analyze with SonarQube
+        uses: SonarSource/sonarqube-scan-action@7295e71c9583053f5bf40e9d4068a0c974603ec8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
       # 5. Установка Docker Buildx
       - name: Set up Docker Buildx
