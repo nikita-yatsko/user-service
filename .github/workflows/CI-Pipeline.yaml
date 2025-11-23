@@ -14,17 +14,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      sonarqube:
-        image: sonarqube:community
-        ports:
-          - 9000:9000
-        options: >-
-          --name sonarqube
-          --health-cmd="curl -f http://localhost:9000 || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
+#    services:
+#      sonarqube:
+#        image: sonarqube:community
+#        ports:
+#          - 9000:9000
+#        options: >-
+#          --name sonarqube
+#          --health-cmd="curl -f http://localhost:9000 || exit 1"
+#          --health-interval=10s
+#          --health-timeout=5s
+#          --health-retries=10
 
     steps:
       # 1. Клонируем репозиторий
@@ -39,24 +39,33 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Wait for SonarQube to be ready
-        run: |
-          for i in {1..30}; do
-            if curl -s http://sonarqube:9000 > /dev/null; then
-              echo "SonarQube is up!"
-              break
-            fi
-            echo "Waiting for SonarQube..."
-            sleep 5
-          done
+#      - name: Wait for SonarQube to be ready
+#        run: |
+#          for i in {1..30}; do
+#            if curl -s http://sonarqube:9000 > /dev/null; then
+#              echo "SonarQube is up!"
+#              break
+#            fi
+#            echo "Waiting for SonarQube..."
+#            sleep 5
+#          done
 
       # 3. Сборка проекта + тесты
       - name: Build and test
         run: mvn -B clean verify
 
       # 4. Анализ кода
-      - name: SonarQube Scan
-        run: mvn sonar:sonar -Dsonar.projectKey=user-service -Dsonar.host.url=http://127.0.0.1:9000 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+#      - name: SonarQube Scan
+#        run: mvn sonar:sonar -Dsonar.projectKey=user-service -Dsonar.host.url=http://127.0.0.1:9000 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: Analyze with SonarQube
+        uses: SonarSource/sonarqube-scan-action@7295e71c9583053f5bf40e9d4068a0c974603ec8
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args:
+            -Dsonar.projectKey=:${{ secrets.SONAR_PROJECT_KEY }}
 
       # 5. Установка Docker Buildx
       - name: Set up Docker Buildx
