@@ -14,17 +14,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      sonarqube:
-        image: sonarqube:community
-        ports:
-          - 9000:9000
-        options: >-
-          --health-cmd="curl -f http://localhost:9000 || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       # 1. Клонируем репозиторий
       - name: Checkout code
@@ -44,7 +33,10 @@ jobs:
 
       # 4. Анализ кода
       - name: SonarQube Scan
-        run: mvn sonar:sonar -Dsonar.projectKey=user-service -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar \
+          -Dsonar.projectKey=user-service \
+          -Dsonar.host.url=http://localhost:9000 \ #${{ secrets.SONAR_HOST }}
+          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       # 5. Установка Docker Buildx
       - name: Set up Docker Buildx
