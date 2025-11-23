@@ -38,16 +38,16 @@ jobs:
           java-version: 21
           cache: maven
 
-#      - name: Wait for SonarQube to be ready
-#        run: |
-#          for i in {1..30}; do
-#            if curl -s http://sonarqube:9000 > /dev/null; then
-#              echo "SonarQube is up!"
-#              break
-#            fi
-#            echo "Waiting for SonarQube..."
-#            sleep 5
-#          done
+      - name: Wait for SonarQube to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -s http://sonarqube:9000 > /dev/null; then
+              echo "SonarQube is up!"
+              break
+            fi
+            echo "Waiting for SonarQube..."
+            sleep 5
+          done
 
       # 3. Сборка проекта + тесты
 #      - name: Build and test
