@@ -66,10 +66,7 @@ jobs:
 #            -Dsonar.projectKey=:${{ secrets.SONAR_PROJECT_KEY }}
 
       - name: Analyze with SonarQube
-        run: mvn sonar:sonar \
-          -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
-          -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} \
-          -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }} -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       # 5. Установка Docker Buildx
 #      - name: Set up Docker Buildx
