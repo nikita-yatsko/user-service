@@ -14,21 +14,12 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    services:
-      sonarqube:
-        image: sonarqube:community
-        ports:
-          - 9000:9000
-        options: >-
-          --health-cmd="curl -f http://localhost:9000 || exit 1"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=10
-
     steps:
       # 1. Клонируем репозиторий
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       # 2. Устанавливаем JDK 21 с кешем Maven
       - name: Set up JDK 21
@@ -38,16 +29,21 @@ jobs:
           java-version: 21
           cache: maven
 
-      - name: Wait for SonarQube to be ready
-        run: |
-          for i in {1..30}; do
-            if curl -s http://sonarqube:9000 > /dev/null; then
-              echo "SonarQube is up!"
-              break
-            fi
-            echo "Waiting for SonarQube..."
-            sleep 5
-          done
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+
 
       # 3. Сборка проекта + тесты
 #      - name: Build and test
@@ -55,8 +51,15 @@ jobs:
 
       # 4. Анализ кода
 
-      - name: SonarQube scan
-        run: mvn sonar:sonar -Dsonar.projectKey=user-service -Dsonar.host.url=http://localhost:9000 -Dsonar.login=${{ secrets.SONAR_TOKEN }}
+      - name: Build and analyze
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: |
+          mvn -B verify \
+            org.sonarsource.scanner.maven:sonar-maven-plugin:sonar \
+            -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }} \
+            -Dsonar.organization=${{ secrets.SONAR_ORG }} \
+            -Dsonar.host.url=${{ secrets.SONAR_HOST_URL }}
 
       # 5. Установка Docker Buildx
 #      - name: Set up Docker Buildx
