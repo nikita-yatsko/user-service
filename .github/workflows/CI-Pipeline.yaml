@@ -35,7 +35,7 @@ jobs:
       - name: SonarQube Scan
         run: mvn sonar:sonar \
           -Dsonar.projectKey=user-service \
-          -Dsonar.host.url=http://localhost:9000 \ #${{ secrets.SONAR_HOST }}
+          -Dsonar.host.url=http://localhost:9000 \
           -Dsonar.login=${{ secrets.SONAR_TOKEN }}
 
       # 5. Установка Docker Buildx
