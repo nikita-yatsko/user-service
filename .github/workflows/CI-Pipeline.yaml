@@ -20,6 +20,7 @@ jobs:
         ports:
           - 9000:9000
         options: >-
+          --name sonarqube
           --health-cmd="curl -f http://localhost:9000 || exit 1"
           --health-interval=10s
           --health-timeout=5s
