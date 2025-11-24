@@ -1,6 +1,6 @@
 --liquibase formatted sql
 
---changeset nyatska:3
+--changeset user_service:3
 INSERT INTO users (name, surname, birth_date, email, active)
 VALUES
     ('Alice', 'Johnson', '1990-04-12', 'alice@example.com', 'ACTIVE'),
@@ -9,7 +9,7 @@ VALUES
     ('Admin', 'Admin', '1995-01-15', 'admin@example.com', 'ACTIVE');
 
 
---changeset nyatska:4
+--changeset user_service:4
 INSERT INTO payment_cards (user_id, number, holder, expiration_date, active)
 VALUES
     (1, '1111222233334444', 'Alice Johnson', '2027-04-30', 'ACTIVE'),
