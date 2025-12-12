@@ -12,7 +12,6 @@ import com.userservise.app.model.exception.NotFoundException;
 import com.userservise.app.repository.UserRepository;
 import com.userservise.app.service.UserService;
 import com.userservise.app.utils.specifications.UserSpecifications;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
@@ -33,23 +32,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CachePut(value = "users", key = "#result.id")
-    public UserDto createUser(UserRequest request) {
+    @CachePut(value = "users", key = "#result.userId")
+    public UserRequest createUser(UserRequest request) {
         if (userRepository.existsByEmail(request.getEmail()))
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
-        User user =  userRepository.save(userMapper.createUser(request));
+        User savedUser = userMapper.createUser(request);
+        User user =  userRepository.save(savedUser);
 
-        return userMapper.toDto(user);
+        return userMapper.toUserRequest(user);
     }
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "users", key = "#id")
-    public UserDto getUserById(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
-        return userMapper.toDto(user);
+    @Cacheable(value = "users", key = "#userId")
+    public UserDto getUserById(Integer userId) {
+        return userRepository.findUserByUserId(userId)
+                .map(userMapper::toDto)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
+    }
+
+    @Override
+    public UserRequest getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .map(userMapper::toUserRequest)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL.getMessage(email)));
     }
 
     @Override
@@ -58,23 +65,22 @@ public class UserServiceImpl implements UserService {
         Specification<User> specification = UserSpecifications.hasFirstName(firstName)
                 .and(UserSpecifications.hasSurname(surname));
 
-        Page<User> usersPage = userRepository.findAll(specification, pageable);
-
-        return usersPage.map(userMapper::toDto);
+        return userRepository.findAll(specification, pageable)
+                .map(userMapper::toDto);
     }
 
     @Override
     @Transactional
-    @CachePut(value = "users", key = "#id")
-    public UserDto updateUser(Integer id, UserRequest request) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
+    @CachePut(value = "users", key = "#userId")
+    public UserDto updateUser(Integer userId, UserRequest request) {
+        User user = userRepository.findUserByUserId(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         if (!request.getEmail().equals(user.getEmail()) && userRepository.existsByEmail(request.getEmail()))
             throw new DataExistException(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(request.getEmail()));
 
         if (!checkCardsCount(user))
-            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(id));
+            throw new InvalidDataException(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(userId));
 
         userMapper.updateUser(request, user);
         User updatedUser = userRepository.save(user);
@@ -84,10 +90,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CachePut(value = "users", key = "#id")
-    public UserDto activateUser(Integer id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
+    @CachePut(value = "users", key = "#userId")
+    public UserDto activateUser(Integer userId) {
+        User user = userRepository.findUserByUserId(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         user.setActive(ActiveStatus.ACTIVE);
         User updatedUser = userRepository.save(user);
@@ -97,10 +103,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "users", key = "#id")
-    public UserDto deactivateUser(Integer id) {
-        User user = userRepository.findUserById(id)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id)));
+    @CacheEvict(value = "users", key = "#userId")
+    public UserDto deactivateUser(Integer userId) {
+        User user = userRepository.findUserByUserId(userId)
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         user.setActive(ActiveStatus.INACTIVE);
         User updatedUser = userRepository.save(user);
@@ -110,11 +116,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "users", key = "#id")
-    public void deleteById(Integer id) {
-        if (!userRepository.existsById(id))
-            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(id));
-        userRepository.deleteById(id);
+    @CacheEvict(value = "users", key = "#userId")
+    public void deleteById(Integer userId) {
+        if (!userRepository.existsByUserId(userId))
+            throw new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId));
+        userRepository.deleteUserByUserId(userId);
     }
 
     private Boolean checkCardsCount(User user) {

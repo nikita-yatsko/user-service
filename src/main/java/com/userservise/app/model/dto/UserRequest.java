@@ -14,6 +14,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class UserRequest {
 
+    private Integer userId;
+
     @NotBlank(message = "Name can not be empty")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")
     private String name;

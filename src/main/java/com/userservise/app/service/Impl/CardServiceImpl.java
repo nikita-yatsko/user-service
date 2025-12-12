@@ -137,7 +137,7 @@ public class CardServiceImpl implements CardService {
         if (cardId == null || userId == null)
             throw new InvalidDataException("CardId and UserId cannot be null");
         return cardRepository.findCardById(cardId)
-                .map(card -> card.getOwner().getId().equals(userId))
+                .map(card -> card.getOwner().getUserId().equals(userId))
                 .orElse(false);
     }
 

@@ -67,11 +67,11 @@ public class CommonControllerAdvice {
 
     private ResponseEntity<ErrorResponse> buildErrorResponse (Exception e, HttpStatus status, HttpServletRequest request) {
         ErrorResponse response = new ErrorResponse(
-                LocalDateTime.now(),
                 status.value(),
                 status.getReasonPhrase(),
                 e.getMessage(),
-                request.getRequestURI()
+                request.getRequestURI(),
+                LocalDateTime.now()
         );
 
         return ResponseEntity.status(status).body(response);

@@ -21,6 +21,7 @@ public interface UserMapper {
     @Mapping(target = "active", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "userId", ignore = true)
     void updateUser(UserRequest userDto, @MappingTarget User user);
 
     @Mapping(target = "cards", ignore = true)
@@ -31,6 +32,8 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "active", expression = "java(ActiveStatus.INACTIVE)")
+    @Mapping(target = "userId", source = "userId")
     User createUser(UserRequest request);
 
+    UserRequest toUserRequest(User user);
 }
