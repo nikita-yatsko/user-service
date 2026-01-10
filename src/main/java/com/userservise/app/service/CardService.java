@@ -24,4 +24,6 @@ public interface CardService {
     CardDto deactivateCard(Integer id);
 
     void deleteCard(Integer id);
+
+    Boolean isOwner(Integer cardId, Integer userId);
 }

@@ -10,6 +10,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class CardController {
     private final CardService cardService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<CardDto> getCardById(
             @PathVariable Integer id) {
         log.info("Received request to fetch card with ID: {}", id);
@@ -35,6 +37,7 @@ public class CardController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<CardDto>> getAllCards(
             @RequestParam(required = false) String holder,
             @RequestParam(defaultValue = "0") int page,
@@ -49,6 +52,7 @@ public class CardController {
     }
 
     @GetMapping("/user/{id}")
+    @PreAuthorize("@cardServiceImpl.isOwner(#userId, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<List<CardDto>> getCardByUserId(
             @PathVariable("id") Integer userId){
         log.info("Received request to fetch card with UserId: {}", userId);
@@ -60,6 +64,7 @@ public class CardController {
     }
 
     @PostMapping("/create/{id}")
+    @PreAuthorize("@cardServiceImpl.isOwner(#userId, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<CardDto> createCard(
             @PathVariable("id") Integer userId) {
         log.info("Received request to create card for userId: {}", userId);
@@ -71,6 +76,7 @@ public class CardController {
     }
 
     @PutMapping("/update/{id}")
+    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<CardDto> updateCard(
             @PathVariable Integer id,
             @Valid @RequestBody CardDto cardDto) {
@@ -83,6 +89,7 @@ public class CardController {
     }
 
     @PutMapping("/{id}/active")
+    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<CardDto> setActiveCard(
             @PathVariable Integer id) {
         log.info("Received request to set active to card with ID: {}", id);
@@ -94,6 +101,7 @@ public class CardController {
     }
 
     @PutMapping("/{id}/inactive")
+    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<CardDto> setInactiveCard(
             @PathVariable Integer id) {
         log.info("Received request to set inactive to card with ID: {}", id);
@@ -105,12 +113,13 @@ public class CardController {
     }
 
     @DeleteMapping("/{id}/delete")
+    @PreAuthorize("@cardServiceImpl.isOwner(#id, principal.id) or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCard(
             @PathVariable Integer id) {
         log.info("Received request to delete card with ID: {}", id);
 
         cardService.deleteCard(id);
         log.debug("Card {} was deleted.", id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

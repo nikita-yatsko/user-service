@@ -132,6 +132,15 @@ public class CardServiceImpl implements CardService {
         cardRepository.deleteById(id);
     }
 
+    @Override
+    public Boolean isOwner(Integer cardId, Integer userId) {
+        if (cardId == null || userId == null)
+            throw new InvalidDataException("CardId and UserId cannot be null");
+        return cardRepository.findCardById(cardId)
+                .map(card -> card.getOwner().getId().equals(userId))
+                .orElse(false);
+    }
+
     private Card generateCard (User user) {
         Card card = new Card();
         card.setOwner(user);

@@ -33,5 +33,11 @@ services:
     ports:
       - "8080:8080"
 
+networks:
+  default:
+    external: true
+    name: microservices-net
+
+
 volumes:
   postgres_data:

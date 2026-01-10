@@ -14,7 +14,8 @@ public enum ErrorMessage {
 
     CARD_NOT_FOUND_BY_ID("Card with id: %s was not found"),
     CARD_NUMBER_ALREADY_EXISTS("Card with number: %s already exists"),
-    ;
+
+    INVALID_TOKEN("Invalid token");
 
     private final String message;
 
