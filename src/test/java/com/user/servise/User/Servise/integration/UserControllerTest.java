@@ -1,7 +1,7 @@
 package com.user.servise.User.Servise.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.userservise.app.UserServiseApplication;
+import com.userservise.app.UserServiceApplication;
 import com.userservise.app.model.dto.UserRequest;
 import com.userservise.app.model.entity.User;
 import com.userservise.app.model.enums.ActiveStatus;
@@ -20,7 +20,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDate;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = UserServiseApplication.class)
+@SpringBootTest(classes = UserServiceApplication.class)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class UserControllerTest extends BaseIntegrationTest{
