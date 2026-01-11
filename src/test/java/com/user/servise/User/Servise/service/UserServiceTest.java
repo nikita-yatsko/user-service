@@ -54,33 +54,36 @@ public class UserServiceTest {
     void setUp() {
         user = new User();
         user.setId(1);
+        user.setUserId(1);
+        user.setUserId(1);
         user.setName("name");
         user.setEmail("testemail@mail.com");
 
         userRequest = new UserRequest();
+        userRequest.setUserId(1);
         userRequest.setName("name");
         userRequest.setEmail("testemail@mail.com");
 
         userDto = new UserDto();
-        userDto.setId(1);
+        userDto.setUserId(1);
         userDto.setName("name");
         userDto.setEmail("testemail@mail.com");
     }
 
     @Test
-    public void createUser_Successful() {
+    public void createUserSuccessful() {
         // Arrange:
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userMapper.createUser(any())).thenReturn(user);
         when(userRepository.save(any(User.class))).thenReturn(user);
-        when(userMapper.toDto(any(User.class))).thenReturn(userDto);
+        when(userMapper.toUserRequest(any())).thenReturn(userRequest);
 
         // Act:
-        UserDto result = userService.createUser(userRequest);
+        UserRequest result = userService.createUser(userRequest);
 
         // Assert:
         assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getUserId(), result.getUserId());
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getEmail(), result.getEmail());
 
@@ -88,10 +91,11 @@ public class UserServiceTest {
         verify(userRepository, times(1)).existsByEmail(anyString());
         verify(userRepository, times(1)).save(any(User.class));
         verify(userMapper, times(1)).createUser(any());
+        verify(userMapper, times(1)).toUserRequest(any());
     }
 
     @Test
-    public void createUser_ThrowException() {
+    public void createUserThrowException() {
         // Arrange:
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
@@ -107,9 +111,9 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById_Successful() {
+    public void getUserByIdSuccessful() {
         // Arrange:
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
         // Act:
@@ -117,19 +121,19 @@ public class UserServiceTest {
 
         // Assert:
         assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getId(), result.getUserId());
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getEmail(), result.getEmail());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
         verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
-    public void getUserById_ThrowException() {
+    public void getUserByIdThrowException() {
         // Arrange:
-        when(userRepository.findById(anyInt())).
+        when(userRepository.findUserByUserId(anyInt())).
                 thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1)));
 
         // Act:
@@ -139,11 +143,11 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).findById(1);
+        verify(userRepository, times(1)).findUserByUserId(1);
     }
 
     @Test
-    public void getAllUsers_Successful() {
+    public void getAllUsersSuccessful() {
         // Arrange:
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> response = new PageImpl<>(Collections.singletonList(user), pageable, 1L);
@@ -164,7 +168,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_Successful() {
+    public void updateUserSuccessful() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -175,7 +179,7 @@ public class UserServiceTest {
         userRequest.setName("newName");
         userRequest.setSurname("newSurname");
 
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         doNothing().when(userMapper).updateUser(userRequest, user);
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
@@ -185,24 +189,24 @@ public class UserServiceTest {
 
         // Assert:
         assertNotNull(result);
-        assertEquals(user.getId(), result.getId());
+        assertEquals(user.getUserId(), result.getUserId());
         assertEquals(user.getName(), result.getName());
         assertEquals(user.getSurname(), result.getSurname());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
         verify(userMapper, times(1)).updateUser(userRequest, user);
         verify(userRepository, times(1)).save(any(User.class));
         verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
-    public void updateUser_UserNotFound_ThrowException() {
+    public void updateUserUserNotFoundThrowException() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
 
-        when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.empty());
 
         // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.updateUser(1, userRequest));
@@ -211,11 +215,11 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
     }
 
     @Test
-    public void updateUser_EmailAlreadyExists_ThrowException() {
+    public void updateUserEmailAlreadyExistsThrowException() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -224,7 +228,7 @@ public class UserServiceTest {
         userRequest.setSurname("newSurname");
         userRequest.setEmail("newemail@mail.com");
 
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
         // Act:
@@ -234,12 +238,12 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.EMAIL_ALREADY_EXISTS.getMessage(userRequest.getEmail()), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
         verify(userRepository, times(1)).existsByEmail(anyString());
     }
 
     @Test
-    public void updateUser_CardCountError_ThrowException() {
+    public void updateUserCardCountErrorThrowException() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -247,7 +251,7 @@ public class UserServiceTest {
         userRequest.setName("newName");
         userRequest.setSurname("newSurname");
 
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
 
         // Act:
         InvalidDataException result = assertThrows(InvalidDataException.class, () -> userService.updateUser(1, userRequest));
@@ -256,15 +260,15 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(user.getId()), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
     }
 
     @Test
-    public void activateUser_Successful() {
+    public void activateUserSuccessful() {
         // Arrange:
         userDto.setActive(ActiveStatus.ACTIVE);
 
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
@@ -276,15 +280,15 @@ public class UserServiceTest {
         assertEquals(ActiveStatus.ACTIVE, result.getActive());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
         verify(userRepository, times(1)).save(any(User.class));
         verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
-    public void activateUser_UserNotFound_ThrowException() {
+    public void activateUser_serNotFoundThrowException() {
         // Arrange:
-        when(userRepository.findById(anyInt())).thenReturn(Optional.empty());
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.empty());
 
         // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.activateUser(1));
@@ -293,15 +297,15 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
     }
 
     @Test
-    public void deactivateUser_Successful() {
+    public void deactivateUserSuccessful() {
         // Arrange:
         userDto.setActive(ActiveStatus.INACTIVE);
 
-        when(userRepository.findUserById(user.getId())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(user.getUserId())).thenReturn(Optional.of(user));
         when(userRepository.save(any(User.class))).thenReturn(user);
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
 
@@ -312,15 +316,15 @@ public class UserServiceTest {
         assertEquals(ActiveStatus.INACTIVE, response.getActive());
 
         // Verify:
-        verify(userRepository, times(1)).findUserById(user.getId());
+        verify(userRepository, times(1)).findUserByUserId(user.getUserId());
         verify(userRepository, times(1)).save(any(User.class));
         verify(userMapper, times(1)).toDto(any(User.class));
     }
 
     @Test
-    public void deactivateUser_UserNotFound_ThrowException() {
+    public void deactivateUserUserNotFoundThrowException() {
         // Arrange:
-        when(userRepository.findUserById(1)).thenReturn(Optional.empty());
+        when(userRepository.findUserByUserId(1)).thenReturn(Optional.empty());
 
         // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.deactivateUser(1));
@@ -329,27 +333,27 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).findUserById(1);
+        verify(userRepository, times(1)).findUserByUserId(1);
     }
 
     @Test
-    public void deleteById_Successful() {
+    public void deleteByIdSuccessful() {
         // Arrange:
-        when(userRepository.existsById(1)).thenReturn(true);
-        doNothing().when(userRepository).deleteById(1);
+        when(userRepository.existsByUserId(1)).thenReturn(true);
+        doNothing().when(userRepository).deleteUserByUserId(1);
 
         // Act:
         userService.deleteById(1);
 
         // Verify:
-        verify(userRepository, times(1)).existsById(1);
-        verify(userRepository, times(1)).deleteById(1);
+        verify(userRepository, times(1)).existsByUserId(1);
+        verify(userRepository, times(1)).deleteUserByUserId(1);
     }
 
     @Test
-    public void deleteById_UserNotFound_ThrowException() {
+    public void deleteByIdUserNotFoundThrowException() {
         // Arrange:
-        when(userRepository.existsById(anyInt())).thenReturn(false);
+        when(userRepository.existsByUserId(anyInt())).thenReturn(false);
 
         // Act:
         NotFoundException result = assertThrows(NotFoundException.class, () -> userService.deleteById(1));
@@ -358,6 +362,6 @@ public class UserServiceTest {
         assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
 
         // Verify:
-        verify(userRepository, times(1)).existsById(anyInt());
+        verify(userRepository, times(1)).existsByUserId(anyInt());
     }
 }

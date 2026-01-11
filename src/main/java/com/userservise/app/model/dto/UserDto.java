@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class UserDto {
 
-    private Integer id;
+    private Integer userId;
 
     @NotBlank(message = "Name can not be empty")
     @Size(min = 2, max = 50, message = "Name must be between 2 and 50 characters")

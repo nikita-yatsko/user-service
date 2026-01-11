@@ -15,9 +15,13 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
     // Named method
     Boolean existsByEmail(String email);
 
+    Boolean existsByUserId(Integer userId);
+
+    void deleteUserByUserId(Integer userId);
+
     // JPQL
-    @Query("select u from User u where u.id = :id")
-    Optional<User> findUserById(Integer id);
+    @Query("select u from User u where u.userId = :userId")
+    Optional<User> findUserByUserId(Integer userId);
 
     // Native Sql
     @Query(value = "SELECT * FROM users u WHERE u.email = :email", nativeQuery = true)

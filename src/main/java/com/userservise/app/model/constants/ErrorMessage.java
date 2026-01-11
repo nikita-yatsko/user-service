@@ -10,6 +10,7 @@ public enum ErrorMessage {
 
     USER_NOT_FOUND_BY_ID("User with id: %s was not found"),
     USER_CANNOT_HAVE_MORE_THAN_5_CARDS("User with id: %s has more than 5 cards"),
+    USER_NOT_FOUND_BY_EMAIL("User with email: %s was not found"),
     EMAIL_ALREADY_EXISTS("User with email: %s already exists"),
 
     CARD_NOT_FOUND_BY_ID("Card with id: %s was not found"),

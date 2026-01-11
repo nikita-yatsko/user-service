@@ -13,6 +13,9 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - microservices-net
 
   redis:
     image: redis:7
@@ -20,8 +23,10 @@ services:
     restart: always
     ports:
       - "6379:6379"
+    networks:
+      - microservices-net
 
-  app:
+  user-service:
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -32,6 +37,13 @@ services:
       - redis
     ports:
       - "8080:8080"
+    networks:
+      - microservices-net
+
+networks:
+  microservices-net:
+    external: true
+
 
 networks:
   default:

@@ -7,9 +7,11 @@ import org.springframework.data.domain.Pageable;
 
 public interface UserService {
 
-    UserDto createUser(UserRequest request);
+    UserRequest createUser(UserRequest request);
 
     UserDto getUserById(Integer id);
+
+    UserRequest getUserByEmail(String email);
 
     Page<UserDto> getAllUsers(String firstName, String surname, Pageable pageable);
 

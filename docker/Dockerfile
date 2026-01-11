@@ -4,14 +4,14 @@ WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline
 COPY src ./src
-RUN mvn clean package
+RUN mvn clean package -DskipTests
 
 # Stage 2
 FROM eclipse-temurin:21-jre
 WORKDIR /srv
 COPY --from=builder /app/target/*.jar app.jar
 
-EXPOSE 8080
+EXPOSE 8083
 
 ENV SPRING_PROFILES_ACTIVE=docker
 

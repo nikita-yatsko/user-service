@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,12 +26,12 @@ public class UserController {
 
     private final UserService userService;
 
-    @GetMapping("/{id}")
-    @PreAuthorize("#id == principal.getId() or hasRole('ADMIN')")
+    @GetMapping("/{userId}")
+    @PreAuthorize("#userId == principal.id or hasRole('ADMIN')")
     public ResponseEntity<UserDto> getUserById(
-            @PathVariable Integer id) {
-        log.info("Received request to fetch user with ID: {}", id);
-        UserDto userDto = userService.getUserById(id);
+            @PathVariable Integer userId) {
+        log.info("Received request to fetch user with ID: {}", userId);
+        UserDto userDto = userService.getUserById(userId);
         log.debug("Fetched user data: {}", userDto);
 
         return ResponseEntity.ok(userDto);
@@ -44,7 +43,7 @@ public class UserController {
             @RequestParam(required = false) String firstName,
             @RequestParam(required = false) String surname,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int limit, Principal principal) {
+            @RequestParam(defaultValue = "10") int limit) {
 
         log.info("Received request to fetch all users");
         Pageable pageable = PageRequest.of(page, limit);
@@ -55,24 +54,23 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDto> createUser(
-            @RequestBody @Valid UserRequest request) {
+    public ResponseEntity<UserRequest> createUser(
+            @RequestBody UserRequest request) {
         log.info("Received request to create user: {}", request.getEmail());
-        System.out.println(request.getBirthDate());
-        UserDto response = userService.createUser(request);
+        System.out.println(request);
+        UserRequest response = userService.createUser(request);
 
         log.debug("User was created: {}", request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/update/{id}")
-    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
+    @PutMapping("/update/{userId}")
+    @PreAuthorize("#userId == principal.id or hasRole('ADMIN')")
     public ResponseEntity<UserDto> updateUserWithId(
-            @PathVariable("id") Integer id,
+            @PathVariable("userId") Integer userId,
             @RequestBody @Valid UserRequest updatedUser) {
-        log.info("Received request to update user with ID: {}", id);
-        UserDto response = userService.updateUser(id, updatedUser);
+        log.info("Received request to update user with ID: {}", userId);
+        UserDto response = userService.updateUser(userId, updatedUser);
 
         log.debug("User was updated: {}", updatedUser);
         return ResponseEntity.ok(response);
@@ -90,34 +88,33 @@ public class UserController {
         return ResponseEntity.ok(activatedUser);
     }
 
-    @PutMapping("/{id}/inactive")
+    @PutMapping("/{userId}/inactive")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<UserDto> setInactiveUser(
-            @PathVariable("id") Integer id ) {
-        log.info("Received request to set inactive user with ID: {}", id);
+            @PathVariable("userId") Integer userId ) {
+        log.info("Received request to set inactive user with ID: {}", userId);
 
-        UserDto inactivatedUser = userService.deactivateUser(id);
+        UserDto inactivatedUser = userService.deactivateUser(userId);
 
-        log.debug("User inactivated: {}", id);
+        log.debug("User inactivated: {}", userId);
         return ResponseEntity.ok(inactivatedUser);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("#id == principal.id or hasRole('ADMIN')")
+    @DeleteMapping("/{userId}")
+    @PreAuthorize("#userId == principal.id or hasRole('ADMIN')")
     public ResponseEntity<Void> deleteUserById(
-            @PathVariable Integer id) {
-        log.info("Received request to delete user with ID: {}", id);
-        userService.deleteById(id);
+            @PathVariable Integer userId) {
+        log.info("Received request to delete user with ID: {}", userId);
+        userService.deleteById(userId);
 
-        log.debug("User deleted: {}", id);
+        log.debug("User deleted: {}", userId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/debug-auth")
-    public String debug(Authentication authentication) {
-        if (authentication == null) {
-            return "Authentication = null";
-        }
-        return "Principal = " + authentication.getPrincipal().getClass();
+    @GetMapping("/info/{email}")
+    public ResponseEntity<UserRequest> getUserInfoByEmail(
+            @PathVariable String email) {
+        log.info("Received request to fetch user info by email");
+        return ResponseEntity.ok(userService.getUserByEmail(email));
     }
 }
