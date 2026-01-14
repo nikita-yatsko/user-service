@@ -42,6 +42,16 @@ services:
     networks:
       - microservices-net
 
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./monitoring/tempo.yml:/etc/tempo.yaml
+    ports:
+      - "3200:3200"
+      - "4318:4318"
+    networks:
+      - microservices-net
 
   postgres:
     image: postgres:16
@@ -79,6 +89,7 @@ services:
       - redis
       - grafana
       - loki
+      - tempo
     ports:
       - "8083:8083"
     networks:

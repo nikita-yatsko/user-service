@@ -30,9 +30,10 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth
-                                .requestMatchers("/actuator/**").permitAll()
-                                .requestMatchers("/api/user/create").permitAll()
-                                .anyRequest().authenticated())
+//                                .requestMatchers("/actuator/**").permitAll()
+//                                .requestMatchers("/api/user/create").permitAll()
+//                                .anyRequest().authenticated())
+                                .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
