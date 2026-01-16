@@ -1,7 +1,7 @@
 package com.user.servise.User.Servise.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.userservise.app.UserServiseApplication;
+import com.userservise.app.UserServiceApplication;
 import com.userservise.app.mapper.CardMapper;
 import com.userservise.app.model.dto.CardDto;
 import com.userservise.app.model.entity.Card;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import java.time.LocalDate;
 
 @ActiveProfiles("test")
-@SpringBootTest(classes = UserServiseApplication.class)
+@SpringBootTest(classes = UserServiceApplication.class)
 @AutoConfigureMockMvc
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 public class CardControllerTest extends BaseIntegrationTest{
