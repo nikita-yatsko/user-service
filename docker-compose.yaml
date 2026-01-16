@@ -99,6 +99,5 @@ networks:
   microservices-net:
     external: true
 
-
 volumes:
   postgres_data:
