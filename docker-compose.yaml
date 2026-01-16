@@ -44,7 +44,7 @@ services:
 
   tempo:
     image: grafana/tempo:latest
-    command: [ "-config.file=/etc/tempo.yaml" ]
+    command: [ "-config.file=/etc/tempo.yml" ]
     volumes:
       - ./monitoring/tempo.yml:/etc/tempo.yml
     ports:
