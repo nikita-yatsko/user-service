@@ -53,6 +53,9 @@ public class CardServiceTest {
 
     @BeforeEach
     public void setUp() {
+        userRepository.deleteAll();
+        cardRepository.deleteAll();
+
         card = new Card();
         card.setId(1);
         card.setHolder("user");
@@ -70,7 +73,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void createCard_Successful() {
+    public void createCardSuccessful() {
         // Arrange:
         when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
         when(cardRepository.save(any())).thenReturn(card);
@@ -93,7 +96,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void createCard_UserNotFound_ThrowException() {
+    public void createCardUserNotFoundThrowException() {
         // Arrange:
         when(userRepository.findById(1)).thenReturn(Optional.empty());
 
@@ -109,7 +112,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void createCard_CardCountMoreFive_ThrowException() {
+    public void createCardCardCountMoreFiveThrowException() {
         user.setCards(List.of(new Card(), new Card(), new Card(), new Card(), new Card()));
         when(userRepository.findById(1)).thenReturn(Optional.of(user));
 
@@ -120,7 +123,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void getCardById_Successful() {
+    public void getCardByIdSuccessful() {
         // Arrange:
         when(cardRepository.findById(1)).thenReturn(Optional.of(card));
         when(cardMapper.toDto(card)).thenReturn(cardDto);
@@ -141,7 +144,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void getCardById_CardNotFound_ThrowException() {
+    public void getCardByIdCardNotFoundThrowException() {
         // Arrange:
         when(cardRepository.findById(1)).thenReturn(Optional.empty());
 
@@ -154,7 +157,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void getAllCards_Successful() {
+    public void getAllCardsSuccessful() {
         // Arrange:
         Pageable pageable = PageRequest.of(0, 10);
         Page<Card> response = new PageImpl<>(Collections.singletonList(card), pageable, 1L);
@@ -178,7 +181,7 @@ public class CardServiceTest {
 
 
     @Test
-    public void getAllByUserId_Successful() {
+    public void getAllByUserIdSuccessful() {
         // Arrange:
         when(cardRepository.findCardsByOwnerId(anyInt())).thenReturn(List.of(card));
         when(cardMapper.toDto(card)).thenReturn(cardDto);
@@ -199,7 +202,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void activateCard_Successful() {
+    public void activateCardSuccessful() {
         // Arrange:
         int cardId = card.getId();
         cardDto.setActive(ActiveStatus.ACTIVE);
@@ -221,7 +224,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void activateCard_CardNotFound_ThrowException() {
+    public void activateCardCardNotFoundThrowException() {
         // Arrange:
         when(cardRepository.findCardById(anyInt())).thenReturn(Optional.empty());
 
@@ -237,7 +240,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void deactivateCard_Successful() {
+    public void deactivateCardSuccessful() {
         // Arrange:
         int cardId = card.getId();
         cardDto.setActive(ActiveStatus.INACTIVE);
@@ -259,7 +262,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void deactivateCard_CardNotFound_ThrowException() {
+    public void deactivateCardCardNotFoundThrowException() {
         // Arrange:
         when(cardRepository.findCardById(anyInt())).thenReturn(Optional.empty());
 
@@ -275,7 +278,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void deleteCard_Successful() {
+    public void deleteCardSuccessful() {
         // Arrange:
         when(cardRepository.existsById(anyInt())).thenReturn(true);
         doNothing().when(cardRepository).deleteById(anyInt());
@@ -289,7 +292,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void deleteCard_CardNotFound_ThrowException() {
+    public void deleteCardCardNotFoundThrowException() {
         // Arrange:
         when(cardRepository.existsById(anyInt())).thenReturn(false);
 

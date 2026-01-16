@@ -71,7 +71,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void createUser_Successful() {
+    public void createUserSuccessful() {
         // Arrange:
         when(userRepository.existsByEmail(anyString())).thenReturn(false);
         when(userMapper.createUser(any())).thenReturn(user);
@@ -95,7 +95,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void createUser_ThrowException() {
+    public void createUserThrowException() {
         // Arrange:
         when(userRepository.existsByEmail(anyString())).thenReturn(true);
 
@@ -111,7 +111,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById_Successful() {
+    public void getUserByIdSuccessful() {
         // Arrange:
         when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         when(userMapper.toDto(any(User.class))).thenReturn(userDto);
@@ -131,7 +131,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserById_ThrowException() {
+    public void getUserByIdThrowException() {
         // Arrange:
         when(userRepository.findUserByUserId(anyInt())).
                 thenThrow(new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1)));
@@ -147,7 +147,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getAllUsers_Successful() {
+    public void getAllUsersSuccessful() {
         // Arrange:
         Pageable pageable = PageRequest.of(0, 10);
         Page<User> response = new PageImpl<>(Collections.singletonList(user), pageable, 1L);
@@ -168,7 +168,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_Successful() {
+    public void updateUserSuccessful() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -201,7 +201,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_UserNotFound_ThrowException() {
+    public void updateUserUserNotFoundThrowException() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -219,7 +219,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_EmailAlreadyExists_ThrowException() {
+    public void updateUserEmailAlreadyExistsThrowException() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -243,7 +243,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void updateUser_CardCountError_ThrowException() {
+    public void updateUserCardCountErrorThrowException() {
         // Arrange:
         user.setName("newName");
         user.setSurname("newSurname");
@@ -264,7 +264,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void activateUser_Successful() {
+    public void activateUserSuccessful() {
         // Arrange:
         userDto.setActive(ActiveStatus.ACTIVE);
 
@@ -286,7 +286,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void activateUser_UserNotFound_ThrowException() {
+    public void activateUser_serNotFoundThrowException() {
         // Arrange:
         when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.empty());
 
@@ -301,7 +301,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deactivateUser_Successful() {
+    public void deactivateUserSuccessful() {
         // Arrange:
         userDto.setActive(ActiveStatus.INACTIVE);
 
@@ -322,7 +322,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deactivateUser_UserNotFound_ThrowException() {
+    public void deactivateUserUserNotFoundThrowException() {
         // Arrange:
         when(userRepository.findUserByUserId(1)).thenReturn(Optional.empty());
 
@@ -337,7 +337,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteById_Successful() {
+    public void deleteByIdSuccessful() {
         // Arrange:
         when(userRepository.existsByUserId(1)).thenReturn(true);
         doNothing().when(userRepository).deleteUserByUserId(1);
@@ -351,7 +351,7 @@ public class UserServiceTest {
     }
 
     @Test
-    public void deleteById_UserNotFound_ThrowException() {
+    public void deleteByIdUserNotFoundThrowException() {
         // Arrange:
         when(userRepository.existsByUserId(anyInt())).thenReturn(false);
 
