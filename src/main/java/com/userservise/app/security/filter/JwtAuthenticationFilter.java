@@ -1,11 +1,6 @@
 package com.userservise.app.security.filter;
 
 import com.userservise.app.security.model.CustomUserDetails;
-import com.userservise.app.model.constants.ErrorMessage;
-import com.userservise.app.model.dto.AuthResponse;
-import com.userservise.app.model.exception.InvalidTokenException;
-import com.userservise.app.security.model.CustomUserDetails;
-import com.userservise.app.service.Impl.AuthServiceClient;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
