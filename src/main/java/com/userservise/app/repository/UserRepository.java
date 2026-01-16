@@ -17,7 +17,7 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
 
     Boolean existsByUserId(Integer userId);
 
-    Void deleteUserByUserId(Integer userId);
+    void deleteUserByUserId(Integer userId);
 
     // JPQL
     @Query("select u from User u where u.userId = :userId")
