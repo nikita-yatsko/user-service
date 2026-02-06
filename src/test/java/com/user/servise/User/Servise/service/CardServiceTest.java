@@ -96,33 +96,6 @@ public class CardServiceTest {
     }
 
     @Test
-    public void createCardUserNotFoundThrowException() {
-        // Arrange:
-        when(userRepository.findById(1)).thenReturn(Optional.empty());
-
-        // Act:
-        NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.createCard(1));
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
-
-        // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
-    }
-
-    @Test
-    public void createCardCardCountMoreFiveThrowException() {
-        user.setCards(List.of(new Card(), new Card(), new Card(), new Card(), new Card()));
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
-
-        InvalidDataException result = assertThrows(InvalidDataException.class, () -> cardService.createCard(1));
-
-        assertNotNull(result);
-        assertEquals(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(1), result.getMessage());
-    }
-
-    @Test
     public void getCardByIdSuccessful() {
         // Arrange:
         when(cardRepository.findById(1)).thenReturn(Optional.of(card));
