@@ -39,11 +39,14 @@ spec:
               value: "redis"
             - name: JAVA_OPTS
               value: "-XX:+UseContainerSupport -Xmx256m -Xms512m"
+            - name: MANAGEMENT_OTLP_TRACING_ENDPOINT
+              value: "http://tempo.monitoring.svc.cluster.local:4318/v1/traces"
+            
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8083
-            initialDelaySeconds: 60
+            initialDelaySeconds: 240
             periodSeconds: 5
             timeoutSeconds: 2
 
@@ -51,7 +54,7 @@ spec:
             httpGet:
               path: /actuator/health
               port: 8083
-            initialDelaySeconds: 80
+            initialDelaySeconds: 300
             periodSeconds: 10
             timeoutSeconds: 2
           resources:

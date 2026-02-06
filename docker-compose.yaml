@@ -1,6 +1,58 @@
 version: '3.9'
 
 services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - microservices-net
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks:
+      - microservices-net
+
+  loki:
+    image: grafana/loki:2.9.0
+    container_name: loki
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - microservices-net
+
+  promtail:
+    image: grafana/promtail:2.9.0
+    container_name: promtail
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - ./monitoring/promtail-config.yml:/etc/promtail/config.yml
+    command: -config.file=/etc/promtail/config.yml
+    networks:
+      - microservices-net
+
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yml" ]
+    volumes:
+      - ./monitoring/tempo.yml:/etc/tempo.yml
+    ports:
+      - "3200:3200"
+      - "4318:4318"
+    networks:
+      - microservices-net
+
   postgres:
     image: postgres:16
     container_name: postgres
@@ -35,21 +87,17 @@ services:
     depends_on:
       - postgres
       - redis
+      - grafana
+      - loki
+      - tempo
     ports:
-      - "8080:8080"
+      - "8083:8083"
     networks:
       - microservices-net
 
 networks:
   microservices-net:
     external: true
-
-
-networks:
-  default:
-    external: true
-    name: microservices-net
-
 
 volumes:
   postgres_data:

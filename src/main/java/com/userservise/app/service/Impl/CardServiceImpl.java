@@ -40,7 +40,7 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @CachePut(value = "cards", key = "#result.id")
     public CardDto createCard(Integer userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findUserByUserId(userId)
                 .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(userId)));
 
         if (user.getCards().size() >= 5)
@@ -74,7 +74,7 @@ public class CardServiceImpl implements CardService {
     @Override
     @Transactional(readOnly = true)
     public List<CardDto> getAllByUserId(Integer userId) {
-        List<Card> cards = cardRepository.findCardsByOwnerId(userId);
+        List<Card> cards = cardRepository.findCardsByOwnerUserId(userId);
 
         return cards.stream()
                 .map(cardMapper::toDto)
