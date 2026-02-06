@@ -183,7 +183,7 @@ public class CardServiceTest {
     @Test
     public void getAllByUserIdSuccessful() {
         // Arrange:
-        when(cardRepository.findCardsByOwnerId(anyInt())).thenReturn(List.of(card));
+        when(cardRepository.findCardsByOwnerUserId(anyInt())).thenReturn(List.of(card));
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
         // Act:
@@ -197,7 +197,7 @@ public class CardServiceTest {
         assertEquals(user.getCards().getFirst().getNumber(), result.getFirst().getNumber());
 
         // Verify:
-        verify(cardRepository, times(1)).findCardsByOwnerId(anyInt());
+        verify(cardRepository, times(1)).findCardsByOwnerUserId(anyInt());
         verify(cardMapper, times(1)).toDto(card);
     }
 
