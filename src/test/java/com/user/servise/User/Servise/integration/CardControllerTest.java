@@ -140,7 +140,7 @@ public class CardControllerTest extends BaseIntegrationTest{
 
         // When:
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/card/user/" + user.getId())
+                .get("/api/card/user/" + user.getUserId())
                 .with(authentication(auth))
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -165,7 +165,7 @@ public class CardControllerTest extends BaseIntegrationTest{
 
         // When:
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/card/create/" + user.getId())
+                .post("/api/card/create/" + user.getUserId())
                 .with(authentication(auth))
                 .accept(MediaType.APPLICATION_JSON));
 
