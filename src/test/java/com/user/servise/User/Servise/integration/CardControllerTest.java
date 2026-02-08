@@ -71,6 +71,12 @@ public class CardControllerTest extends BaseIntegrationTest{
         card = cardMapper.toCard(cardService.createCard(user.getUserId()));
     }
 
+    @AfterEach
+    public void tearDown() {
+        cardRepository.deleteAllInBatch(); // deleteAllInBatch быстрее обычного deleteAll
+        userRepository.deleteAllInBatch();
+    }
+
 
     @Test
     public void getCardByIdReturn200Ok() throws Exception {
