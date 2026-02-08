@@ -43,10 +43,6 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      # Запуск тестов
-      - name: Run tests (unit + integration)
-        run: mvn -B verify
-
       # Анализ кода
       - name: Build and analyze
         env:
