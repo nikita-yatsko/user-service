@@ -68,7 +68,7 @@ public class CardControllerTest extends BaseIntegrationTest{
         user.setActive(ActiveStatus.ACTIVE);
 
         user = userRepository.saveAndFlush(user);
-        card = cardMapper.toCard(cardService.createCard(user.getId()));
+        card = cardMapper.toCard(cardService.createCard(user.getUserId()));
     }
 
 
