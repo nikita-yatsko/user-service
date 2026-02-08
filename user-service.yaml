@@ -3,6 +3,11 @@ apiVersion: v1
 kind: Service
 metadata:
   name: user-service
+  namespace: default
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/actuator/prometheus"
+    prometheus.io/port: "8083"
 spec:
   type: ClusterIP
   selector:
@@ -38,25 +43,32 @@ spec:
             - name: SPRING_DATA_REDIS_HOST
               value: "redis"
             - name: JAVA_OPTS
-              value: "-XX:+UseContainerSupport -Xmx256m -Xms512m"
+              value: "-XX:+UseContainerSupport -Xms256m -Xmx512m"
             - name: MANAGEMENT_OTLP_TRACING_ENDPOINT
               value: "http://tempo.monitoring.svc.cluster.local:4318/v1/traces"
             
+
+          startupProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8083
+            failureThreshold: 30
+            periodSeconds: 10
+
           readinessProbe:
             httpGet:
               path: /actuator/health
               port: 8083
-            initialDelaySeconds: 240
+            initialDelaySeconds: 5
             periodSeconds: 5
-            timeoutSeconds: 2
 
           livenessProbe:
             httpGet:
               path: /actuator/health
               port: 8083
-            initialDelaySeconds: 300
-            periodSeconds: 10
-            timeoutSeconds: 2
+            initialDelaySeconds: 10
+            periodSeconds: 20
+
           resources:
             requests:
               memory: "256Mi"

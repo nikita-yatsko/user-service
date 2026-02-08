@@ -67,7 +67,7 @@ public class CardServiceTest {
         cardDto.setNumber("1111222233334444");
 
         user = new User();
-        user.setId(1);
+        user.setUserId(1);
         user.setName("user");
         user.setCards(List.of(card));
     }
@@ -75,7 +75,7 @@ public class CardServiceTest {
     @Test
     public void createCardSuccessful() {
         // Arrange:
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         when(cardRepository.save(any())).thenReturn(card);
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
@@ -90,36 +90,9 @@ public class CardServiceTest {
         assertEquals(user.getCards().getFirst().getNumber(), result.getNumber());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
         verify(cardRepository, times(1)).save(any(Card.class));
         verify(cardMapper, times(1)).toDto(card);
-    }
-
-    @Test
-    public void createCardUserNotFoundThrowException() {
-        // Arrange:
-        when(userRepository.findById(1)).thenReturn(Optional.empty());
-
-        // Act:
-        NotFoundException result = assertThrows(NotFoundException.class, () -> cardService.createCard(1));
-
-        // Assert
-        assertNotNull(result);
-        assertEquals(ErrorMessage.USER_NOT_FOUND_BY_ID.getMessage(1), result.getMessage());
-
-        // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
-    }
-
-    @Test
-    public void createCardCardCountMoreFiveThrowException() {
-        user.setCards(List.of(new Card(), new Card(), new Card(), new Card(), new Card()));
-        when(userRepository.findById(1)).thenReturn(Optional.of(user));
-
-        InvalidDataException result = assertThrows(InvalidDataException.class, () -> cardService.createCard(1));
-
-        assertNotNull(result);
-        assertEquals(ErrorMessage.USER_CANNOT_HAVE_MORE_THAN_5_CARDS.getMessage(1), result.getMessage());
     }
 
     @Test

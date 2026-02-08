@@ -68,7 +68,13 @@ public class CardControllerTest extends BaseIntegrationTest{
         user.setActive(ActiveStatus.ACTIVE);
 
         user = userRepository.saveAndFlush(user);
-        card = cardMapper.toCard(cardService.createCard(user.getId()));
+        card = cardMapper.toCard(cardService.createCard(user.getUserId()));
+    }
+
+    @AfterEach
+    public void tearDown() {
+        cardRepository.deleteAllInBatch(); // deleteAllInBatch быстрее обычного deleteAll
+        userRepository.deleteAllInBatch();
     }
 
 
@@ -134,7 +140,7 @@ public class CardControllerTest extends BaseIntegrationTest{
 
         // When:
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .get("/api/card/user/" + user.getId())
+                .get("/api/card/user/" + user.getUserId())
                 .with(authentication(auth))
                 .accept(MediaType.APPLICATION_JSON));
 
@@ -159,7 +165,7 @@ public class CardControllerTest extends BaseIntegrationTest{
 
         // When:
         ResultActions response = mockMvc.perform(MockMvcRequestBuilders
-                .post("/api/card/create/" + user.getId())
+                .post("/api/card/create/" + user.getUserId())
                 .with(authentication(auth))
                 .accept(MediaType.APPLICATION_JSON));
 
