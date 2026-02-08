@@ -67,7 +67,7 @@ public class CardServiceTest {
         cardDto.setNumber("1111222233334444");
 
         user = new User();
-        user.setId(1);
+        user.setUserId(1);
         user.setName("user");
         user.setCards(List.of(card));
     }
@@ -75,7 +75,7 @@ public class CardServiceTest {
     @Test
     public void createCardSuccessful() {
         // Arrange:
-        when(userRepository.findById(anyInt())).thenReturn(Optional.of(user));
+        when(userRepository.findUserByUserId(anyInt())).thenReturn(Optional.of(user));
         when(cardRepository.save(any())).thenReturn(card);
         when(cardMapper.toDto(card)).thenReturn(cardDto);
 
@@ -90,7 +90,7 @@ public class CardServiceTest {
         assertEquals(user.getCards().getFirst().getNumber(), result.getNumber());
 
         // Verify:
-        verify(userRepository, times(1)).findById(anyInt());
+        verify(userRepository, times(1)).findUserByUserId(anyInt());
         verify(cardRepository, times(1)).save(any(Card.class));
         verify(cardMapper, times(1)).toDto(card);
     }
