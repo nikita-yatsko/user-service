@@ -11,7 +11,7 @@ public interface UserService {
 
     UserDto getUserById(Integer id);
 
-    UserRequest getUserByEmail(String email);
+    UserRequest getUserByEmail(Integer userId);
 
     Page<UserDto> getAllUsers(String firstName, String surname, Pageable pageable);
 

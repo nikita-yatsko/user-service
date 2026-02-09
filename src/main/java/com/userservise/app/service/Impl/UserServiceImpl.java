@@ -53,10 +53,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserRequest getUserByEmail(String email) {
-        return userRepository.findByEmail(email)
+    public UserRequest getUserByEmail(Integer userId) {
+        return userRepository.findUserByUserId(userId)
                 .map(userMapper::toUserRequest)
-                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL.getMessage(email)));
+                .orElseThrow(() -> new NotFoundException(ErrorMessage.USER_NOT_FOUND_BY_EMAIL.getMessage(userId)));
     }
 
     @Override
