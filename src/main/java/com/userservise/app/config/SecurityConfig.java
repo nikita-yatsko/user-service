@@ -32,7 +32,7 @@ public class SecurityConfig {
                         auth
                                 .requestMatchers("/actuator/**").permitAll()
                                 .requestMatchers("/api/user/create").permitAll()
-                                .anyRequest().authenticated())
+                                .anyRequest().permitAll())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

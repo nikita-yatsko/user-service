@@ -111,10 +111,10 @@ public class UserController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/info/{email}")
+    @GetMapping("/info/{userId}")
     public ResponseEntity<UserRequest> getUserInfoByEmail(
-            @PathVariable String email) {
-        log.info("Received request to fetch user info by email");
-        return ResponseEntity.ok(userService.getUserByEmail(email));
+            @PathVariable Integer userId) {
+        log.info("Received request to fetch user info by userId");
+        return ResponseEntity.ok(userService.getUserByEmail(userId));
     }
 }

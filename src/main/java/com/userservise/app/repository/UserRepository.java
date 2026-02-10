@@ -22,11 +22,4 @@ public interface UserRepository extends JpaRepository<User, Integer>, JpaSpecifi
     // JPQL
     @Query("select u from User u where u.userId = :userId")
     Optional<User> findUserByUserId(Integer userId);
-
-    // Native Sql
-    @Query(value = "SELECT * FROM users u WHERE u.email = :email", nativeQuery = true)
-    Optional<User> findByEmail(@Param("email") String email);
-
-
-
 }
